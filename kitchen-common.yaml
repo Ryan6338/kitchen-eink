@@ -74,6 +74,27 @@ font:
   - file:
       type: gfonts
       family: Roboto
+      weight: 500
+    id: font_forecast_day
+    size: 32
+    bpp: 4
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 500
+    id: font_forecast_temp
+    size: 35
+    bpp: 4
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 400
+    id: font_forecast_rain
+    size: 28
+    bpp: 4
+  - file:
+      type: gfonts
+      family: Roboto
       weight: 400
     id: font_body
     size: 42
@@ -164,6 +185,74 @@ text_sensor:
             then:
               - script.execute: refresh_display
 
+  # Daily forecast data is supplied by sensor.kitchen_weather_forecast.
+  # Its attributes are day_0_name/condition through day_6_name/condition,
+  # plus the matching _high, _low and _rain numeric attributes below.
+  - platform: homeassistant
+    id: forecast_0_name
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_0_name
+  - platform: homeassistant
+    id: forecast_1_name
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_1_name
+  - platform: homeassistant
+    id: forecast_2_name
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_2_name
+  - platform: homeassistant
+    id: forecast_3_name
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_3_name
+  - platform: homeassistant
+    id: forecast_4_name
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_4_name
+  - platform: homeassistant
+    id: forecast_5_name
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_5_name
+  - platform: homeassistant
+    id: forecast_6_name
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_6_name
+
+  - platform: homeassistant
+    id: forecast_0_condition
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_0_condition
+  - platform: homeassistant
+    id: forecast_1_condition
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_1_condition
+  - platform: homeassistant
+    id: forecast_2_condition
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_2_condition
+  - platform: homeassistant
+    id: forecast_3_condition
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_3_condition
+  - platform: homeassistant
+    id: forecast_4_condition
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_4_condition
+  - platform: homeassistant
+    id: forecast_5_condition
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_5_condition
+  - platform: homeassistant
+    id: forecast_6_condition
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_6_condition
+
+  - platform: homeassistant
+    id: forecast_updated
+    entity_id: sensor.kitchen_weather_forecast
+    on_value:
+      then:
+        - script.execute: refresh_weather_display
+
   - platform: homeassistant
     id: recipe_title
     entity_id: sensor.kitchen_recipe_display
@@ -227,6 +316,92 @@ sensor:
             then:
               - script.execute: refresh_display
 
+  # Seven-day forecast. Rain is precipitation probability (0-100).
+  - platform: homeassistant
+    id: forecast_0_high
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_0_high
+  - platform: homeassistant
+    id: forecast_0_low
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_0_low
+  - platform: homeassistant
+    id: forecast_0_rain
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_0_rain
+  - platform: homeassistant
+    id: forecast_1_high
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_1_high
+  - platform: homeassistant
+    id: forecast_1_low
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_1_low
+  - platform: homeassistant
+    id: forecast_1_rain
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_1_rain
+  - platform: homeassistant
+    id: forecast_2_high
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_2_high
+  - platform: homeassistant
+    id: forecast_2_low
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_2_low
+  - platform: homeassistant
+    id: forecast_2_rain
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_2_rain
+  - platform: homeassistant
+    id: forecast_3_high
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_3_high
+  - platform: homeassistant
+    id: forecast_3_low
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_3_low
+  - platform: homeassistant
+    id: forecast_3_rain
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_3_rain
+  - platform: homeassistant
+    id: forecast_4_high
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_4_high
+  - platform: homeassistant
+    id: forecast_4_low
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_4_low
+  - platform: homeassistant
+    id: forecast_4_rain
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_4_rain
+  - platform: homeassistant
+    id: forecast_5_high
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_5_high
+  - platform: homeassistant
+    id: forecast_5_low
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_5_low
+  - platform: homeassistant
+    id: forecast_5_rain
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_5_rain
+  - platform: homeassistant
+    id: forecast_6_high
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_6_high
+  - platform: homeassistant
+    id: forecast_6_low
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_6_low
+  - platform: homeassistant
+    id: forecast_6_rain
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_6_rain
+
   - platform: homeassistant
     id: recipe_step
     entity_id: input_number.kitchen_recipe_step
@@ -269,6 +444,19 @@ script:
     then:
       - delay: ${display_refresh_delay}
       - component.update: main_display
+
+  # Home Assistant sends the forecast attributes as a group. Give all of the
+  # imported values a moment to settle before drawing a single new frame.
+  - id: refresh_weather_display
+    mode: restart
+    then:
+      - delay: 2s
+      - if:
+          condition:
+            lambda: |-
+              return !id(recipe_active).state;
+          then:
+            - script.execute: refresh_display
 
 
   - id: show_ingredients

@@ -135,6 +135,90 @@
 
 
   // ============================================================
+  // MONOCHROME WEATHER SPRITES
+  // ============================================================
+
+  auto draw_weather_sprite =
+    [&](const std::string &condition, int cx, int cy) {
+
+      auto draw_sun = [&](int x, int y) {
+        it.filled_circle(x, y, 20, MID_GRAY);
+        it.circle(x, y, 21, BLACK);
+        it.line(x, y - 37, x, y - 27, BLACK);
+        it.line(x, y + 27, x, y + 37, BLACK);
+        it.line(x - 37, y, x - 27, y, BLACK);
+        it.line(x + 27, y, x + 37, y, BLACK);
+        it.line(x - 27, y - 27, x - 20, y - 20, BLACK);
+        it.line(x + 20, y + 20, x + 27, y + 27, BLACK);
+        it.line(x + 20, y - 20, x + 27, y - 27, BLACK);
+        it.line(x - 27, y + 27, x - 20, y + 20, BLACK);
+      };
+
+      auto draw_cloud = [&](int x, int y) {
+        it.filled_circle(x - 23, y + 5, 19, DARK_GRAY);
+        it.filled_circle(x, y - 7, 27, DARK_GRAY);
+        it.filled_circle(x + 29, y + 4, 20, DARK_GRAY);
+        it.filled_rectangle(x - 42, y + 3, 91, 24, DARK_GRAY);
+      };
+
+      auto draw_rain = [&](int x, int y, bool heavy) {
+        draw_cloud(x, y - 15);
+        const int spacing = heavy ? 18 : 28;
+        const int count = heavy ? 4 : 3;
+        for (int j = 0; j < count; j++) {
+          int dx = x - ((count - 1) * spacing) / 2 + (j * spacing);
+          it.line(dx + 5, y + 20, dx - 3, y + 39, BLACK);
+          if (heavy)
+            it.line(dx + 9, y + 20, dx + 1, y + 39, BLACK);
+        }
+      };
+
+      if (condition == "sunny" || condition == "clear-night") {
+        draw_sun(cx, cy);
+
+      } else if (condition == "partlycloudy") {
+        draw_sun(cx - 22, cy - 17);
+        draw_cloud(cx + 10, cy + 9);
+
+      } else if (condition == "rainy" || condition == "snowy-rainy") {
+        draw_rain(cx, cy, false);
+
+      } else if (condition == "pouring") {
+        draw_rain(cx, cy, true);
+
+      } else if (condition == "lightning" || condition == "lightning-rainy") {
+        draw_cloud(cx, cy - 15);
+        it.line(cx + 8, cy + 13, cx - 4, cy + 32, BLACK);
+        it.line(cx - 4, cy + 32, cx + 7, cy + 32, BLACK);
+        it.line(cx + 7, cy + 32, cx - 8, cy + 48, BLACK);
+
+      } else if (condition == "snowy" || condition == "hail") {
+        draw_cloud(cx, cy - 15);
+        for (int dx = -28; dx <= 28; dx += 28) {
+          it.line(cx + dx - 6, cy + 29, cx + dx + 6, cy + 29, BLACK);
+          it.line(cx + dx, cy + 23, cx + dx, cy + 35, BLACK);
+          it.line(cx + dx - 4, cy + 25, cx + dx + 4, cy + 33, BLACK);
+          it.line(cx + dx + 4, cy + 25, cx + dx - 4, cy + 33, BLACK);
+        }
+
+      } else if (condition == "fog") {
+        draw_cloud(cx, cy - 18);
+        it.line(cx - 44, cy + 22, cx + 44, cy + 22, DARK_GRAY);
+        it.line(cx - 34, cy + 34, cx + 34, cy + 34, MID_GRAY);
+
+      } else if (condition == "windy" || condition == "windy-variant") {
+        it.line(cx - 43, cy - 18, cx + 30, cy - 18, DARK_GRAY);
+        it.circle(cx + 30, cy - 8, 10, DARK_GRAY);
+        it.line(cx - 43, cy, cx + 43, cy, BLACK);
+        it.line(cx - 43, cy + 18, cx + 23, cy + 18, DARK_GRAY);
+
+      } else {
+        draw_cloud(cx, cy);
+      }
+    };
+
+
+  // ============================================================
   // BACKGROUND
   // ============================================================
 
@@ -247,147 +331,186 @@
 
 
     // ----------------------------------------------------------
-    // SEPARATOR
+    // CURRENT WEATHER
     // ----------------------------------------------------------
 
-    it.filled_rectangle(
-      300,
-      640,
-      SCREEN_WIDTH - 600,
-      3,
-      LIGHT_GRAY
-    );
+    it.filled_rectangle(300, 590, SCREEN_WIDTH - 600, 3, LIGHT_GRAY);
 
+    std::string current_condition = id(weather_condition).state;
+    std::string condition_label = current_condition;
 
-    // ----------------------------------------------------------
-    // WEATHER TEMPERATURE
-    // ----------------------------------------------------------
+    if (condition_label.empty() || condition_label == "unknown" ||
+        condition_label == "unavailable") {
+      condition_label = "Weather unavailable";
+    } else if (condition_label == "partlycloudy") {
+      condition_label = "Partly cloudy";
+    } else if (condition_label == "cloudy") {
+      condition_label = "Cloudy";
+    } else if (condition_label == "sunny") {
+      condition_label = "Sunny";
+    } else if (condition_label == "rainy") {
+      condition_label = "Rain";
+    } else if (condition_label == "pouring") {
+      condition_label = "Heavy rain";
+    } else if (condition_label == "lightning" ||
+               condition_label == "lightning-rainy") {
+      condition_label = "Thunderstorms";
+    } else if (condition_label == "windy" ||
+               condition_label == "windy-variant") {
+      condition_label = "Windy";
+    } else if (condition_label == "fog") {
+      condition_label = "Fog";
+    } else if (condition_label == "hail") {
+      condition_label = "Hail";
+    } else if (condition_label == "snowy") {
+      condition_label = "Snow";
+    } else if (condition_label == "snowy-rainy") {
+      condition_label = "Sleet";
+    } else if (condition_label == "clear-night") {
+      condition_label = "Clear";
+    } else if (condition_label == "exceptional") {
+      condition_label = "Exceptional weather";
+    }
+
+    draw_weather_sprite(current_condition, 745, 687);
 
     if (id(weather_temperature).has_state()) {
-
       it.printf(
-        SCREEN_WIDTH / 2,
-        795,
-        id(font_weather_temp),
-        BLACK,
-        TextAlign::CENTER,
-        "%.0f°C",
-        id(weather_temperature).state
+        970, 665, id(font_weather_temp), BLACK, TextAlign::CENTER,
+        "%.0f\u00B0", id(weather_temperature).state
       );
-
     } else {
+      it.print(
+        970, 665, id(font_weather_temp), MID_GRAY, TextAlign::CENTER, "--\u00B0"
+      );
+    }
+
+    it.print(
+      970, 747, id(font_weather_condition), DARK_GRAY,
+      TextAlign::CENTER, condition_label.c_str()
+    );
+
+
+    // ----------------------------------------------------------
+    // SEVEN-DAY FORECAST
+    // ----------------------------------------------------------
+
+    it.filled_rectangle(MARGIN, 815, SCREEN_WIDTH - (MARGIN * 2), 3, LIGHT_GRAY);
+
+    std::string forecast_conditions[7] = {
+      id(forecast_0_condition).state, id(forecast_1_condition).state,
+      id(forecast_2_condition).state, id(forecast_3_condition).state,
+      id(forecast_4_condition).state, id(forecast_5_condition).state,
+      id(forecast_6_condition).state
+    };
+    std::string forecast_days[7] = {
+      id(forecast_0_name).state, id(forecast_1_name).state,
+      id(forecast_2_name).state, id(forecast_3_name).state,
+      id(forecast_4_name).state, id(forecast_5_name).state,
+      id(forecast_6_name).state
+    };
+    float forecast_highs[7] = {
+      id(forecast_0_high).state, id(forecast_1_high).state,
+      id(forecast_2_high).state, id(forecast_3_high).state,
+      id(forecast_4_high).state, id(forecast_5_high).state,
+      id(forecast_6_high).state
+    };
+    float forecast_lows[7] = {
+      id(forecast_0_low).state, id(forecast_1_low).state,
+      id(forecast_2_low).state, id(forecast_3_low).state,
+      id(forecast_4_low).state, id(forecast_5_low).state,
+      id(forecast_6_low).state
+    };
+    float forecast_rain[7] = {
+      id(forecast_0_rain).state, id(forecast_1_rain).state,
+      id(forecast_2_rain).state, id(forecast_3_rain).state,
+      id(forecast_4_rain).state, id(forecast_5_rain).state,
+      id(forecast_6_rain).state
+    };
+    bool has_high[7] = {
+      id(forecast_0_high).has_state(), id(forecast_1_high).has_state(),
+      id(forecast_2_high).has_state(), id(forecast_3_high).has_state(),
+      id(forecast_4_high).has_state(), id(forecast_5_high).has_state(),
+      id(forecast_6_high).has_state()
+    };
+    bool has_low[7] = {
+      id(forecast_0_low).has_state(), id(forecast_1_low).has_state(),
+      id(forecast_2_low).has_state(), id(forecast_3_low).has_state(),
+      id(forecast_4_low).has_state(), id(forecast_5_low).has_state(),
+      id(forecast_6_low).has_state()
+    };
+    bool has_rain[7] = {
+      id(forecast_0_rain).has_state(), id(forecast_1_rain).has_state(),
+      id(forecast_2_rain).has_state(), id(forecast_3_rain).has_state(),
+      id(forecast_4_rain).has_state(), id(forecast_5_rain).has_state(),
+      id(forecast_6_rain).has_state()
+    };
+
+    static const char *short_days[] = {
+      "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
+    };
+
+    const int forecast_width = SCREEN_WIDTH - (MARGIN * 2);
+    const int cell_width = forecast_width / 7;
+
+    for (int i = 0; i < 7; i++) {
+      const int center_x = MARGIN + (cell_width * i) + (cell_width / 2);
+      std::string day_label = forecast_days[i];
+
+      if (day_label.empty() || day_label == "unknown" ||
+          day_label == "unavailable") {
+        day_label = now.is_valid()
+          ? short_days[(now.day_of_week - 1 + i) % 7]
+          : "--";
+      } else if (i == 0 && now.is_valid() &&
+                 day_label == short_days[now.day_of_week - 1]) {
+        day_label = "Today";
+      }
+
+      if (i > 0)
+        it.filled_rectangle(MARGIN + (cell_width * i), 850, 2, 400, PALE_GRAY);
 
       it.print(
-        SCREEN_WIDTH / 2,
-        795,
-        id(font_weather_temp),
-        MID_GRAY,
-        TextAlign::CENTER,
-        "--°C"
+        center_x, 870, id(font_forecast_day), DARK_GRAY,
+        TextAlign::CENTER, day_label.c_str()
       );
+
+      draw_weather_sprite(forecast_conditions[i], center_x, 965);
+
+      if (has_high[i] && has_low[i]) {
+        it.printf(
+          center_x, 1052, id(font_forecast_temp), BLACK,
+          TextAlign::CENTER, "H %.0f\u00B0  L %.0f\u00B0", forecast_highs[i], forecast_lows[i]
+        );
+      } else {
+        it.print(
+          center_x, 1052, id(font_forecast_temp), MID_GRAY,
+          TextAlign::CENTER, "H --\u00B0  L --\u00B0"
+        );
+      }
+
+      // Small rain-drop sprite beside the precipitation probability.
+      it.filled_circle(center_x - 38, 1134, 5, MID_GRAY);
+      it.line(center_x - 38, 1119, center_x - 44, 1130, MID_GRAY);
+      it.line(center_x - 38, 1119, center_x - 32, 1130, MID_GRAY);
+
+      if (has_rain[i]) {
+        it.printf(
+          center_x + 8, 1124, id(font_forecast_rain), DARK_GRAY,
+          TextAlign::CENTER, "%.0f%% rain", forecast_rain[i]
+        );
+      } else {
+        it.print(
+          center_x + 8, 1124, id(font_forecast_rain), MID_GRAY,
+          TextAlign::CENTER, "--% rain"
+        );
+      }
     }
 
-
-    // ----------------------------------------------------------
-    // WEATHER CONDITION
-    // ----------------------------------------------------------
-
-    std::string condition = id(weather_condition).state;
-
-
-    if (
-      condition.empty() ||
-      condition == "unknown" ||
-      condition == "unavailable"
-    ) {
-
-      condition = "Weather unavailable";
-
-    } else if (condition == "partlycloudy") {
-
-      condition = "Partly cloudy";
-
-    } else if (condition == "cloudy") {
-
-      condition = "Cloudy";
-
-    } else if (condition == "sunny") {
-
-      condition = "Sunny";
-
-    } else if (condition == "rainy") {
-
-      condition = "Rain";
-
-    } else if (condition == "pouring") {
-
-      condition = "Heavy rain";
-
-    } else if (condition == "lightning") {
-
-      condition = "Thunderstorms";
-
-    } else if (condition == "lightning-rainy") {
-
-      condition = "Thunderstorms";
-
-    } else if (condition == "windy") {
-
-      condition = "Windy";
-
-    } else if (condition == "windy-variant") {
-
-      condition = "Windy";
-
-    } else if (condition == "fog") {
-
-      condition = "Fog";
-
-    } else if (condition == "hail") {
-
-      condition = "Hail";
-
-    } else if (condition == "snowy") {
-
-      condition = "Snow";
-
-    } else if (condition == "snowy-rainy") {
-
-      condition = "Sleet";
-
-    } else if (condition == "clear-night") {
-
-      condition = "Clear";
-
-    } else if (condition == "exceptional") {
-
-      condition = "Exceptional weather";
-    }
-
-
     it.print(
-      SCREEN_WIDTH / 2,
-      940,
-      id(font_weather_condition),
-      DARK_GRAY,
-      TextAlign::CENTER,
-      condition.c_str()
+      SCREEN_WIDTH / 2, 1315, id(font_meta), MID_GRAY,
+      TextAlign::CENTER, "Kitchen"
     );
-
-
-    // ----------------------------------------------------------
-    // IDLE FOOTER
-    // ----------------------------------------------------------
-
-    it.print(
-      SCREEN_WIDTH / 2,
-      1180,
-      id(font_meta),
-      MID_GRAY,
-      TextAlign::CENTER,
-      "Kitchen"
-    );
-
 
     // Do not draw any recipe UI.
     return;
