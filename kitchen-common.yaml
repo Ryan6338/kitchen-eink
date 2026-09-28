@@ -104,6 +104,22 @@ font:
       type: gfonts
       family: Roboto
       weight: 400
+    id: font_body_compact
+    size: 30
+    bpp: 4
+
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 400
+    id: font_body_small
+    size: 20
+    bpp: 4
+
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 400
     id: font_meta
     size: 32
     bpp: 4

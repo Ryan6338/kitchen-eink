@@ -34,15 +34,18 @@
         int line_height,
         auto *font,
         Color color,
-        int max_y) -> int {
+        int max_y,
+        bool render = true) -> int {
 
       std::string line;
       std::string word;
 
       auto draw_line = [&]() {
 
-        if (!line.empty() && y + line_height <= max_y) {
+        if (line.empty())
+          return;
 
+        if (render && y + line_height <= max_y) {
           it.print(
             x,
             y,
@@ -51,9 +54,10 @@
             TextAlign::TOP_LEFT,
             line.c_str()
           );
-
-          y += line_height;
         }
+
+        // Always advance while measuring so callers can detect overflow.
+        y += line_height;
 
         line.clear();
       };
@@ -918,15 +922,54 @@
       );
     }
 
+    const int ingredients_y = 420;
+    const int ingredients_max_y = NAV_TOP - 80;
+    const int ingredients_width = SCREEN_WIDTH - (MARGIN * 2);
+    auto *ingredients_font = id(font_body);
+    int ingredients_line_height = 58;
+
+    int ingredients_end_y = draw_wrapped(
+      ingredients,
+      MARGIN,
+      ingredients_y,
+      ingredients_width,
+      ingredients_line_height,
+      ingredients_font,
+      BLACK,
+      ingredients_max_y,
+      false
+    );
+
+    if (ingredients_end_y > ingredients_max_y) {
+      ingredients_font = id(font_body_compact);
+      ingredients_line_height = 40;
+      ingredients_end_y = draw_wrapped(
+        ingredients,
+        MARGIN,
+        ingredients_y,
+        ingredients_width,
+        ingredients_line_height,
+        ingredients_font,
+        BLACK,
+        ingredients_max_y,
+        false
+      );
+    }
+
+    if (ingredients_end_y > ingredients_max_y) {
+      ingredients_font = id(font_body_small);
+      ingredients_line_height = 25;
+    }
+
     draw_wrapped(
       ingredients,
       MARGIN,
-      420,
-      SCREEN_WIDTH - (MARGIN * 2),
-      58,
-      id(font_body),
+      ingredients_y,
+      ingredients_width,
+      ingredients_line_height,
+      ingredients_font,
       BLACK,
-      NAV_TOP - 80
+      ingredients_max_y
     );
   }
 
