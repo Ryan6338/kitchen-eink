@@ -174,7 +174,7 @@ text_sensor:
 
   - platform: homeassistant
     id: weather_condition
-    entity_id: weather.forecast_home
+    entity_id: weather.redcliffe
 
     on_value:
       then:
@@ -254,6 +254,16 @@ text_sensor:
         - script.execute: refresh_weather_display
 
   - platform: homeassistant
+    id: forecast_wind_unit
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: wind_unit
+
+  - platform: homeassistant
+    id: forecast_precipitation_unit
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: precipitation_unit
+
+  - platform: homeassistant
     id: recipe_title
     entity_id: sensor.kitchen_recipe_display
     attribute: title
@@ -304,7 +314,7 @@ sensor:
 
   - platform: homeassistant
     id: weather_temperature
-    entity_id: weather.forecast_home
+    entity_id: weather.redcliffe
     attribute: temperature
 
     on_value:
@@ -316,7 +326,8 @@ sensor:
             then:
               - script.execute: refresh_display
 
-  # Seven-day forecast. Rain is precipitation probability (0-100).
+  # Seven-day forecast. Rain probability is 0-100; precipitation is the
+  # provider's expected amount and is used when probability is unavailable.
   - platform: homeassistant
     id: forecast_0_high
     entity_id: sensor.kitchen_weather_forecast
@@ -330,6 +341,18 @@ sensor:
     entity_id: sensor.kitchen_weather_forecast
     attribute: day_0_rain
   - platform: homeassistant
+    id: forecast_0_precipitation
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_0_precipitation
+  - platform: homeassistant
+    id: forecast_0_humidity
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_0_humidity
+  - platform: homeassistant
+    id: forecast_0_wind
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_0_wind
+  - platform: homeassistant
     id: forecast_1_high
     entity_id: sensor.kitchen_weather_forecast
     attribute: day_1_high
@@ -341,6 +364,18 @@ sensor:
     id: forecast_1_rain
     entity_id: sensor.kitchen_weather_forecast
     attribute: day_1_rain
+  - platform: homeassistant
+    id: forecast_1_precipitation
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_1_precipitation
+  - platform: homeassistant
+    id: forecast_1_humidity
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_1_humidity
+  - platform: homeassistant
+    id: forecast_1_wind
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_1_wind
   - platform: homeassistant
     id: forecast_2_high
     entity_id: sensor.kitchen_weather_forecast
@@ -354,6 +389,18 @@ sensor:
     entity_id: sensor.kitchen_weather_forecast
     attribute: day_2_rain
   - platform: homeassistant
+    id: forecast_2_precipitation
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_2_precipitation
+  - platform: homeassistant
+    id: forecast_2_humidity
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_2_humidity
+  - platform: homeassistant
+    id: forecast_2_wind
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_2_wind
+  - platform: homeassistant
     id: forecast_3_high
     entity_id: sensor.kitchen_weather_forecast
     attribute: day_3_high
@@ -365,6 +412,18 @@ sensor:
     id: forecast_3_rain
     entity_id: sensor.kitchen_weather_forecast
     attribute: day_3_rain
+  - platform: homeassistant
+    id: forecast_3_precipitation
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_3_precipitation
+  - platform: homeassistant
+    id: forecast_3_humidity
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_3_humidity
+  - platform: homeassistant
+    id: forecast_3_wind
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_3_wind
   - platform: homeassistant
     id: forecast_4_high
     entity_id: sensor.kitchen_weather_forecast
@@ -378,6 +437,18 @@ sensor:
     entity_id: sensor.kitchen_weather_forecast
     attribute: day_4_rain
   - platform: homeassistant
+    id: forecast_4_precipitation
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_4_precipitation
+  - platform: homeassistant
+    id: forecast_4_humidity
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_4_humidity
+  - platform: homeassistant
+    id: forecast_4_wind
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_4_wind
+  - platform: homeassistant
     id: forecast_5_high
     entity_id: sensor.kitchen_weather_forecast
     attribute: day_5_high
@@ -390,6 +461,18 @@ sensor:
     entity_id: sensor.kitchen_weather_forecast
     attribute: day_5_rain
   - platform: homeassistant
+    id: forecast_5_precipitation
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_5_precipitation
+  - platform: homeassistant
+    id: forecast_5_humidity
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_5_humidity
+  - platform: homeassistant
+    id: forecast_5_wind
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_5_wind
+  - platform: homeassistant
     id: forecast_6_high
     entity_id: sensor.kitchen_weather_forecast
     attribute: day_6_high
@@ -401,6 +484,18 @@ sensor:
     id: forecast_6_rain
     entity_id: sensor.kitchen_weather_forecast
     attribute: day_6_rain
+  - platform: homeassistant
+    id: forecast_6_precipitation
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_6_precipitation
+  - platform: homeassistant
+    id: forecast_6_humidity
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_6_humidity
+  - platform: homeassistant
+    id: forecast_6_wind
+    entity_id: sensor.kitchen_weather_forecast
+    attribute: day_6_wind
 
   - platform: homeassistant
     id: recipe_step

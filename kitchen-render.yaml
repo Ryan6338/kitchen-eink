@@ -427,6 +427,24 @@
       id(forecast_4_rain).state, id(forecast_5_rain).state,
       id(forecast_6_rain).state
     };
+    float forecast_precipitation[7] = {
+      id(forecast_0_precipitation).state, id(forecast_1_precipitation).state,
+      id(forecast_2_precipitation).state, id(forecast_3_precipitation).state,
+      id(forecast_4_precipitation).state, id(forecast_5_precipitation).state,
+      id(forecast_6_precipitation).state
+    };
+    float forecast_humidity[7] = {
+      id(forecast_0_humidity).state, id(forecast_1_humidity).state,
+      id(forecast_2_humidity).state, id(forecast_3_humidity).state,
+      id(forecast_4_humidity).state, id(forecast_5_humidity).state,
+      id(forecast_6_humidity).state
+    };
+    float forecast_wind[7] = {
+      id(forecast_0_wind).state, id(forecast_1_wind).state,
+      id(forecast_2_wind).state, id(forecast_3_wind).state,
+      id(forecast_4_wind).state, id(forecast_5_wind).state,
+      id(forecast_6_wind).state
+    };
     bool has_high[7] = {
       id(forecast_0_high).has_state(), id(forecast_1_high).has_state(),
       id(forecast_2_high).has_state(), id(forecast_3_high).has_state(),
@@ -445,15 +463,73 @@
       id(forecast_4_rain).has_state(), id(forecast_5_rain).has_state(),
       id(forecast_6_rain).has_state()
     };
+    bool has_precipitation[7] = {
+      id(forecast_0_precipitation).has_state(), id(forecast_1_precipitation).has_state(),
+      id(forecast_2_precipitation).has_state(), id(forecast_3_precipitation).has_state(),
+      id(forecast_4_precipitation).has_state(), id(forecast_5_precipitation).has_state(),
+      id(forecast_6_precipitation).has_state()
+    };
+    bool has_humidity[7] = {
+      id(forecast_0_humidity).has_state(), id(forecast_1_humidity).has_state(),
+      id(forecast_2_humidity).has_state(), id(forecast_3_humidity).has_state(),
+      id(forecast_4_humidity).has_state(), id(forecast_5_humidity).has_state(),
+      id(forecast_6_humidity).has_state()
+    };
+    bool has_wind[7] = {
+      id(forecast_0_wind).has_state(), id(forecast_1_wind).has_state(),
+      id(forecast_2_wind).has_state(), id(forecast_3_wind).has_state(),
+      id(forecast_4_wind).has_state(), id(forecast_5_wind).has_state(),
+      id(forecast_6_wind).has_state()
+    };
+
+    for (int i = 0; i < 7; i++) {
+      has_high[i] = has_high[i] && !std::isnan(forecast_highs[i]);
+      has_low[i] = has_low[i] && !std::isnan(forecast_lows[i]);
+      has_rain[i] = has_rain[i] && !std::isnan(forecast_rain[i]);
+      has_precipitation[i] = has_precipitation[i] && !std::isnan(forecast_precipitation[i]);
+      has_humidity[i] = has_humidity[i] && !std::isnan(forecast_humidity[i]);
+      has_wind[i] = has_wind[i] && !std::isnan(forecast_wind[i]);
+    }
+
+    std::string wind_unit = id(forecast_wind_unit).state;
+    if (wind_unit == "unknown" || wind_unit == "unavailable")
+      wind_unit = "";
+
+    std::string precipitation_unit = id(forecast_precipitation_unit).state;
+    if (precipitation_unit == "unknown" || precipitation_unit == "unavailable")
+      precipitation_unit = "";
 
     static const char *short_days[] = {
       "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
     };
 
-    const int forecast_width = SCREEN_WIDTH - (MARGIN * 2);
-    const int cell_width = forecast_width / 7;
+    int forecast_count = 7;
 
-    for (int i = 0; i < 7; i++) {
+    // Providers return different forecast lengths. Drop unavailable entries
+    // from the end instead of showing an empty day card.
+    while (forecast_count > 0) {
+      const int last = forecast_count - 1;
+      const bool missing_name =
+        forecast_days[last].empty() ||
+        forecast_days[last] == "--" ||
+        forecast_days[last] == "unknown" ||
+        forecast_days[last] == "unavailable";
+      const bool missing_condition =
+        forecast_conditions[last].empty() ||
+        forecast_conditions[last] == "unknown" ||
+        forecast_conditions[last] == "unavailable";
+
+      if (!missing_name || !missing_condition ||
+          has_high[last] || has_low[last] || has_rain[last])
+        break;
+
+      forecast_count--;
+    }
+
+    const int forecast_width = SCREEN_WIDTH - (MARGIN * 2);
+    const int cell_width = forecast_width / (forecast_count > 0 ? forecast_count : 1);
+
+    for (int i = 0; i < forecast_count; i++) {
       const int center_x = MARGIN + (cell_width * i) + (cell_width / 2);
       std::string day_label = forecast_days[i];
 
@@ -494,21 +570,61 @@
       it.line(center_x - 38, 1119, center_x - 44, 1130, MID_GRAY);
       it.line(center_x - 38, 1119, center_x - 32, 1130, MID_GRAY);
 
-      if (has_rain[i]) {
+      if (has_rain[i] && (forecast_rain[i] > 0 || !has_precipitation[i])) {
         it.printf(
           center_x + 8, 1124, id(font_forecast_rain), DARK_GRAY,
           TextAlign::CENTER, "%.0f%% rain", forecast_rain[i]
         );
+      } else if (has_precipitation[i]) {
+        it.printf(
+          center_x + 8, 1124, id(font_forecast_rain), DARK_GRAY,
+          TextAlign::CENTER, "%.1f %s rain",
+          forecast_precipitation[i], precipitation_unit.c_str()
+        );
       } else {
         it.print(
           center_x + 8, 1124, id(font_forecast_rain), MID_GRAY,
-          TextAlign::CENTER, "--% rain"
+          TextAlign::CENTER, "-- rain"
+        );
+      }
+
+      // Humidity drop sprite and relative humidity.
+      it.filled_circle(center_x - 38, 1181, 5, MID_GRAY);
+      it.line(center_x - 38, 1166, center_x - 44, 1177, MID_GRAY);
+      it.line(center_x - 38, 1166, center_x - 32, 1177, MID_GRAY);
+
+      if (has_humidity[i]) {
+        it.printf(
+          center_x + 8, 1171, id(font_forecast_rain), DARK_GRAY,
+          TextAlign::CENTER, "%.0f%% RH", forecast_humidity[i]
+        );
+      } else {
+        it.print(
+          center_x + 8, 1171, id(font_forecast_rain), MID_GRAY,
+          TextAlign::CENTER, "--% RH"
+        );
+      }
+
+      // Wind sprite and speed in the provider's configured unit.
+      it.line(center_x - 49, 1219, center_x - 28, 1219, MID_GRAY);
+      it.line(center_x - 45, 1226, center_x - 24, 1226, DARK_GRAY);
+      it.line(center_x - 40, 1233, center_x - 28, 1233, MID_GRAY);
+
+      if (has_wind[i]) {
+        it.printf(
+          center_x + 18, 1209, id(font_forecast_rain), DARK_GRAY,
+          TextAlign::CENTER, "%.0f %s", forecast_wind[i], wind_unit.c_str()
+        );
+      } else {
+        it.print(
+          center_x + 18, 1209, id(font_forecast_rain), MID_GRAY,
+          TextAlign::CENTER, "-- wind"
         );
       }
     }
 
     it.print(
-      SCREEN_WIDTH / 2, 1315, id(font_meta), MID_GRAY,
+      SCREEN_WIDTH / 2, 1345, id(font_meta), MID_GRAY,
       TextAlign::CENTER, "Kitchen"
     );
 

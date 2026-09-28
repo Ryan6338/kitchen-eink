@@ -1,18 +1,20 @@
 # Add this block to Home Assistant's configuration.yaml (or include it as a
 # package). It exposes the daily forecast as scalar attributes that ESPHome can
-# subscribe to. Change weather.forecast_home here and in kitchen-common.yaml if
+# subscribe to. The AccuWeather integration is exposed as weather.redcliffe. Change it here and
 # your weather entity has a different ID.
 
 template:
   - triggers:
       - trigger: homeassistant
         event: start
+      - trigger: state
+        entity_id: weather.redcliffe
       - trigger: time_pattern
         hours: /1
     actions:
       - action: weather.get_forecasts
         target:
-          entity_id: weather.forecast_home
+          entity_id: weather.redcliffe
         data:
           type: daily
         response_variable: daily
@@ -21,114 +23,179 @@ template:
         unique_id: kitchen_weather_forecast
         state: "{{ now().isoformat() }}"
         attributes:
+          wind_unit: "{{ state_attr('weather.redcliffe', 'wind_speed_unit') or '' }}"
+          precipitation_unit: "{{ state_attr('weather.redcliffe', 'precipitation_unit') or '' }}"
           day_0_name: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ as_local(as_datetime(f[0].datetime)).strftime('%a') if f | count > 0 else '--' }}
           day_0_condition: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[0].condition if f | count > 0 else 'unknown' }}
           day_0_high: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[0].temperature if f | count > 0 else none }}
           day_0_low: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[0].templow if f | count > 0 else none }}
           day_0_rain: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
-            {{ f[0].precipitation_probability | default(0) if f | count > 0 else none }}
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[0].precipitation_probability | default(none) if f | count > 0 else none }}
+          day_0_precipitation: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[0].precipitation | default(none) if f | count > 0 else none }}
+          day_0_humidity: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[0].humidity | default(none) if f | count > 0 else none }}
+          day_0_wind: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[0].wind_speed | default(none) if f | count > 0 else none }}
 
           day_1_name: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ as_local(as_datetime(f[1].datetime)).strftime('%a') if f | count > 1 else '--' }}
           day_1_condition: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[1].condition if f | count > 1 else 'unknown' }}
           day_1_high: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[1].temperature if f | count > 1 else none }}
           day_1_low: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[1].templow if f | count > 1 else none }}
           day_1_rain: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
-            {{ f[1].precipitation_probability | default(0) if f | count > 1 else none }}
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[1].precipitation_probability | default(none) if f | count > 1 else none }}
+          day_1_precipitation: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[1].precipitation | default(none) if f | count > 1 else none }}
+          day_1_humidity: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[1].humidity | default(none) if f | count > 1 else none }}
+          day_1_wind: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[1].wind_speed | default(none) if f | count > 1 else none }}
 
           day_2_name: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ as_local(as_datetime(f[2].datetime)).strftime('%a') if f | count > 2 else '--' }}
           day_2_condition: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[2].condition if f | count > 2 else 'unknown' }}
           day_2_high: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[2].temperature if f | count > 2 else none }}
           day_2_low: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[2].templow if f | count > 2 else none }}
           day_2_rain: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
-            {{ f[2].precipitation_probability | default(0) if f | count > 2 else none }}
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[2].precipitation_probability | default(none) if f | count > 2 else none }}
+          day_2_precipitation: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[2].precipitation | default(none) if f | count > 2 else none }}
+          day_2_humidity: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[2].humidity | default(none) if f | count > 2 else none }}
+          day_2_wind: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[2].wind_speed | default(none) if f | count > 2 else none }}
 
           day_3_name: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ as_local(as_datetime(f[3].datetime)).strftime('%a') if f | count > 3 else '--' }}
           day_3_condition: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[3].condition if f | count > 3 else 'unknown' }}
           day_3_high: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[3].temperature if f | count > 3 else none }}
           day_3_low: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[3].templow if f | count > 3 else none }}
           day_3_rain: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
-            {{ f[3].precipitation_probability | default(0) if f | count > 3 else none }}
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[3].precipitation_probability | default(none) if f | count > 3 else none }}
+          day_3_precipitation: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[3].precipitation | default(none) if f | count > 3 else none }}
+          day_3_humidity: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[3].humidity | default(none) if f | count > 3 else none }}
+          day_3_wind: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[3].wind_speed | default(none) if f | count > 3 else none }}
 
           day_4_name: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ as_local(as_datetime(f[4].datetime)).strftime('%a') if f | count > 4 else '--' }}
           day_4_condition: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[4].condition if f | count > 4 else 'unknown' }}
           day_4_high: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[4].temperature if f | count > 4 else none }}
           day_4_low: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[4].templow if f | count > 4 else none }}
           day_4_rain: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
-            {{ f[4].precipitation_probability | default(0) if f | count > 4 else none }}
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[4].precipitation_probability | default(none) if f | count > 4 else none }}
+          day_4_precipitation: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[4].precipitation | default(none) if f | count > 4 else none }}
+          day_4_humidity: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[4].humidity | default(none) if f | count > 4 else none }}
+          day_4_wind: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[4].wind_speed | default(none) if f | count > 4 else none }}
 
           day_5_name: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ as_local(as_datetime(f[5].datetime)).strftime('%a') if f | count > 5 else '--' }}
           day_5_condition: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[5].condition if f | count > 5 else 'unknown' }}
           day_5_high: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[5].temperature if f | count > 5 else none }}
           day_5_low: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[5].templow if f | count > 5 else none }}
           day_5_rain: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
-            {{ f[5].precipitation_probability | default(0) if f | count > 5 else none }}
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[5].precipitation_probability | default(none) if f | count > 5 else none }}
+          day_5_precipitation: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[5].precipitation | default(none) if f | count > 5 else none }}
+          day_5_humidity: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[5].humidity | default(none) if f | count > 5 else none }}
+          day_5_wind: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[5].wind_speed | default(none) if f | count > 5 else none }}
 
           day_6_name: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ as_local(as_datetime(f[6].datetime)).strftime('%a') if f | count > 6 else '--' }}
           day_6_condition: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[6].condition if f | count > 6 else 'unknown' }}
           day_6_high: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[6].temperature if f | count > 6 else none }}
           day_6_low: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
+            {% set f = daily['weather.redcliffe'].forecast %}
             {{ f[6].templow if f | count > 6 else none }}
           day_6_rain: >-
-            {% set f = daily['weather.forecast_home'].forecast %}
-            {{ f[6].precipitation_probability | default(0) if f | count > 6 else none }}
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[6].precipitation_probability | default(none) if f | count > 6 else none }}
+          day_6_precipitation: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[6].precipitation | default(none) if f | count > 6 else none }}
+          day_6_humidity: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[6].humidity | default(none) if f | count > 6 else none }}
+          day_6_wind: >-
+            {% set f = daily['weather.redcliffe'].forecast %}
+            {{ f[6].wind_speed | default(none) if f | count > 6 else none }}
