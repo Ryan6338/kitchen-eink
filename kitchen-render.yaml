@@ -244,7 +244,9 @@
   // BACKGROUND
   // ============================================================
 
-  it.fill(WHITE);
+  // Draw the native-resolution wallpaper first. All dashboard panels and
+  // recipe content are layered over it with opaque dark surfaces.
+  it.image(0, 0, id(kitchen_background));
 
 
   // ============================================================
