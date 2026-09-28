@@ -1,0 +1,133 @@
+substitutions:
+  display_refresh_delay: 50ms
+
+esphome:
+  name: kitchen-display
+  friendly_name: Kitchen Display
+  platformio_options:
+    build_flags: -DBOARD_HAS_PSRAM
+    board_build.arduino.memory_type: qio_opi
+    board_build.flash_mode: dio
+    board_upload.maximum_ram_size: 524288
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: ESP32S3
+  flash_size: 8MB
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_COMPILER_OPTIMIZATION_PERF: "y"
+      CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
+      CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
+      CONFIG_ESPTOOLPY_FLASHSIZE_8MB: "y"
+      CONFIG_FREERTOS_HZ: "1000"
+      CONFIG_SPIRAM_FETCH_INSTRUCTIONS: "y"
+      CONFIG_SPIRAM_RODATA: "y"
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+logger:
+
+api:
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+
+packages:
+  common: !include kitchen-common.yaml
+
+i2c:
+  id: display_i2c
+  sda: GPIO8
+  scl: GPIO9
+  frequency: 400kHz
+  scan: true
+
+ch422g:
+  - id: display_io
+
+output:
+  - platform: gpio
+    id: lcd_backlight_output
+    pin:
+      ch422g: display_io
+      number: 2
+      mode: OUTPUT
+      inverted: false
+
+light:
+  - platform: binary
+    id: lcd_backlight
+    name: Kitchen Display Backlight
+    output: lcd_backlight_output
+    restore_mode: ALWAYS_ON
+
+display:
+  - platform: rpi_dpi_rgb
+    id: main_display
+    dimensions:
+      width: 800
+      height: 480
+    color_order: RGB
+    update_interval: never
+    auto_clear_enabled: false
+    pclk_frequency: 16MHz
+    pclk_inverted: true
+    de_pin: GPIO5
+    hsync_pin:
+      number: GPIO46
+      ignore_strapping_warning: true
+    vsync_pin:
+      number: GPIO3
+      ignore_strapping_warning: true
+    pclk_pin: GPIO7
+    reset_pin:
+      ch422g: display_io
+      number: 3
+      mode: OUTPUT
+    hsync_back_porch: 8
+    hsync_front_porch: 8
+    hsync_pulse_width: 4
+    vsync_back_porch: 16
+    vsync_front_porch: 16
+    vsync_pulse_width: 4
+    data_pins:
+      red:
+        - GPIO1
+        - GPIO2
+        - GPIO42
+        - GPIO41
+        - GPIO40
+      green:
+        - GPIO39
+        - GPIO0
+        - GPIO45
+        - GPIO48
+        - GPIO47
+        - GPIO21
+      blue:
+        - GPIO14
+        - GPIO38
+        - GPIO18
+        - GPIO17
+        - GPIO10
+    lambda: !include kitchen-render.yaml
+
+touchscreen:
+  - platform: gt911
+    id: main_touchscreen
+    display: main_display
+    i2c_id: display_i2c
+    interrupt_pin: GPIO4
+    reset_pin:
+      ch422g: display_io
+      number: 1
+      mode: OUTPUT

@@ -1,5 +1,5 @@
 substitutions:
-  display_refresh_delay: 3s
+  display_refresh_delay: 50ms
 
 esphome:
   name: kitchen-display-simulator
@@ -25,8 +25,8 @@ display:
     id: main_display
 
     dimensions:
-      width: 1872
-      height: 1404
+      width: 800
+      height: 480
 
     update_interval: never
 

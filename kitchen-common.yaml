@@ -1,6 +1,6 @@
 # ===================================================================
 # KITCHEN RECIPE DISPLAY
-# Shared between the PC simulator and the eventual E1003.
+# Shared by the 800x480 Waveshare ESP32-S3 display and PC simulator.
 # ===================================================================
 
 
@@ -11,10 +11,10 @@
 # Hardware configs can override these.
 #
 # Simulator:
-#   display_refresh_delay: 3s
+#   display_refresh_delay: 50ms
 #
-# E1003:
-#   display_refresh_delay: 0s
+# ESP32-S3 LCD:
+#   display_refresh_delay: 50ms
 #
 # -------------------------------------------------------------------
 
@@ -37,8 +37,7 @@ esphome:
 # FONTS
 # -------------------------------------------------------------------
 #
-# 4 BPP gives us 16 levels of font anti-aliasing, which is useful
-# when approximating a 16-level grayscale e-paper display.
+# 4 BPP provides smooth anti-aliased text on the RGB LCD.
 #
 # -------------------------------------------------------------------
 
@@ -48,71 +47,55 @@ font:
       family: Roboto
       weight: 300
     id: font_clock
-    size: 220
+    size: 88
     bpp: 4
   - file:
       type: gfonts
       family: Roboto
       weight: 400
     id: font_date
-    size: 52
+    size: 24
     bpp: 4
   - file:
       type: gfonts
       family: Roboto
       weight: 500
     id: font_weather_temp
-    size: 110
+    size: 48
     bpp: 4
   - file:
       type: gfonts
       family: Roboto
       weight: 400
     id: font_weather_condition
-    size: 48
+    size: 21
     bpp: 4
   - file:
       type: gfonts
       family: Roboto
       weight: 500
     id: font_forecast_day
-    size: 32
+    size: 16
     bpp: 4
   - file:
       type: gfonts
       family: Roboto
       weight: 500
     id: font_forecast_temp
-    size: 35
+    size: 15
     bpp: 4
   - file:
       type: gfonts
       family: Roboto
       weight: 400
     id: font_forecast_rain
-    size: 28
+    size: 13
     bpp: 4
   - file:
       type: gfonts
       family: Roboto
       weight: 400
     id: font_body
-    size: 42
-    bpp: 4
-
-  - file:
-      type: gfonts
-      family: Roboto
-      weight: 400
-    id: font_body_compact
-    size: 30
-    bpp: 4
-
-  - file:
-      type: gfonts
-      family: Roboto
-      weight: 400
-    id: font_body_small
     size: 20
     bpp: 4
 
@@ -120,8 +103,24 @@ font:
       type: gfonts
       family: Roboto
       weight: 400
+    id: font_body_compact
+    size: 16
+    bpp: 4
+
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 400
+    id: font_body_small
+    size: 13
+    bpp: 4
+
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 400
     id: font_meta
-    size: 32
+    size: 15
     bpp: 4
 
   - file:
@@ -129,7 +128,7 @@ font:
       family: Roboto
       weight: 500
     id: font_time_label
-    size: 24
+    size: 13
     bpp: 4
 
   - file:
@@ -137,7 +136,7 @@ font:
       family: Roboto
       weight: 500
     id: font_time_value
-    size: 34
+    size: 18
     bpp: 4
 
   - file:
@@ -145,7 +144,7 @@ font:
       family: Roboto
       weight: 500
     id: font_heading
-    size: 54
+    size: 25
     bpp: 4
 
   - file:
@@ -153,7 +152,7 @@ font:
       family: Roboto
       weight: 700
     id: font_title
-    size: 72
+    size: 32
     bpp: 4
 
   - file:
@@ -161,7 +160,7 @@ font:
       family: Roboto
       weight: 500
     id: font_button
-    size: 38
+    size: 17
     bpp: 4
 
 
@@ -599,7 +598,7 @@ sensor:
 # mode: restart is intentional.
 #
 # If HA sends title, step, instruction, servings etc. one after
-# another, the timer restarts and we only perform one e-paper refresh
+# another, the timer restarts and we only render one LCD frame
 # once all the new data has arrived.
 #
 # -------------------------------------------------------------------
@@ -668,15 +667,15 @@ script:
 #
 # Screen dimensions:
 #
-#     1404 x 1872
+#     800 x 480 (landscape)
 #
 # Bottom navigation starts at:
 #
-#     Y = 1700
+#     Y = 418
 #
 # ---------------------------------------------------------------
 # |       Previous      |   Ingredients   |        Next         |
-# |      0 - 450        |    450 - 950    |     950 - 1404      |
+# |      0 - 255        |    256 - 543    |     544 - 799       |
 # ---------------------------------------------------------------
 #
 # -------------------------------------------------------------------
@@ -704,9 +703,9 @@ binary_sensor:
     touchscreen_id: main_touchscreen
 
     x_min: 0
-    x_max: 599
-    y_min: 1230
-    y_max: 1403
+    x_max: 255
+    y_min: 418
+    y_max: 479
 
     on_press:
       then:
@@ -732,10 +731,10 @@ binary_sensor:
     id: touch_middle
     touchscreen_id: main_touchscreen
 
-    x_min: 600
-    x_max: 1271
-    y_min: 1230
-    y_max: 1403
+    x_min: 256
+    x_max: 543
+    y_min: 418
+    y_max: 479
 
     on_press:
       then:
@@ -760,10 +759,10 @@ binary_sensor:
     id: touch_next
     touchscreen_id: main_touchscreen
 
-    x_min: 1272
-    x_max: 1871
-    y_min: 1230
-    y_max: 1403
+    x_min: 544
+    x_max: 799
+    y_min: 418
+    y_max: 479
 
     on_press:
       then:

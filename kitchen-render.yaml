@@ -18,8 +18,8 @@
   const int SCREEN_WIDTH  = it.get_width();
   const int SCREEN_HEIGHT = it.get_height();
 
-  const int MARGIN = 70;
-  const int NAV_TOP = 1230;
+  const int MARGIN = 24;
+  const int NAV_TOP = 418;
 
 
   // ============================================================
@@ -155,34 +155,34 @@
         };
 
       auto draw_sun = [&](int x, int y) {
-        it.filled_circle(x, y, 20, MID_GRAY);
-        it.circle(x, y, 21, BLACK);
-        draw_thick_line(x, y - 37, x, y - 27, BLACK);
-        draw_thick_line(x, y + 27, x, y + 37, BLACK);
-        draw_thick_line(x - 37, y, x - 27, y, BLACK);
-        draw_thick_line(x + 27, y, x + 37, y, BLACK);
-        draw_thick_line(x - 27, y - 27, x - 20, y - 20, BLACK);
-        draw_thick_line(x + 20, y + 20, x + 27, y + 27, BLACK);
-        draw_thick_line(x + 20, y - 20, x + 27, y - 27, BLACK);
-        draw_thick_line(x - 27, y + 27, x - 20, y + 20, BLACK);
+        it.filled_circle(x, y, 9, MID_GRAY);
+        it.circle(x, y, 10, BLACK);
+        draw_thick_line(x, y - 18, x, y - 13, BLACK);
+        draw_thick_line(x, y + 13, x, y + 18, BLACK);
+        draw_thick_line(x - 18, y, x - 13, y, BLACK);
+        draw_thick_line(x + 13, y, x + 18, y, BLACK);
+        draw_thick_line(x - 13, y - 13, x - 10, y - 10, BLACK);
+        draw_thick_line(x + 10, y + 10, x + 13, y + 13, BLACK);
+        draw_thick_line(x + 10, y - 10, x + 13, y - 13, BLACK);
+        draw_thick_line(x - 13, y + 13, x - 10, y + 10, BLACK);
       };
 
       auto draw_cloud = [&](int x, int y) {
-        it.filled_circle(x - 23, y + 5, 19, DARK_GRAY);
-        it.filled_circle(x, y - 7, 27, DARK_GRAY);
-        it.filled_circle(x + 29, y + 4, 20, DARK_GRAY);
-        it.filled_rectangle(x - 42, y + 3, 91, 24, DARK_GRAY);
+        it.filled_circle(x - 10, y + 2, 9, DARK_GRAY);
+        it.filled_circle(x, y - 4, 12, DARK_GRAY);
+        it.filled_circle(x + 13, y + 2, 9, DARK_GRAY);
+        it.filled_rectangle(x - 19, y + 1, 41, 11, DARK_GRAY);
       };
 
       auto draw_rain = [&](int x, int y, bool heavy) {
-        draw_cloud(x, y - 15);
-        const int spacing = heavy ? 18 : 28;
+        draw_cloud(x, y - 7);
+        const int spacing = heavy ? 8 : 12;
         const int count = heavy ? 4 : 3;
         for (int j = 0; j < count; j++) {
           int dx = x - ((count - 1) * spacing) / 2 + (j * spacing);
-          draw_thick_line(dx + 5, y + 20, dx - 3, y + 39, BLACK);
+          draw_thick_line(dx + 2, y + 9, dx - 1, y + 18, BLACK);
           if (heavy)
-            draw_thick_line(dx + 9, y + 20, dx + 1, y + 39, BLACK);
+            draw_thick_line(dx + 4, y + 9, dx + 1, y + 18, BLACK);
         }
       };
 
@@ -190,8 +190,8 @@
         draw_sun(cx, cy);
 
       } else if (condition == "partlycloudy") {
-        draw_sun(cx - 22, cy - 17);
-        draw_cloud(cx + 10, cy + 9);
+        draw_sun(cx - 10, cy - 8);
+        draw_cloud(cx + 5, cy + 4);
 
       } else if (condition == "rainy" || condition == "snowy-rainy") {
         draw_rain(cx, cy, false);
@@ -200,30 +200,28 @@
         draw_rain(cx, cy, true);
 
       } else if (condition == "lightning" || condition == "lightning-rainy") {
-        draw_cloud(cx, cy - 15);
-        it.line(cx + 8, cy + 13, cx - 4, cy + 32, BLACK);
-        it.line(cx - 4, cy + 32, cx + 7, cy + 32, BLACK);
-        it.line(cx + 7, cy + 32, cx - 8, cy + 48, BLACK);
+        draw_cloud(cx, cy - 7);
+        it.line(cx + 4, cy + 6, cx - 2, cy + 15, BLACK);
+        it.line(cx - 2, cy + 15, cx + 3, cy + 15, BLACK);
+        it.line(cx + 3, cy + 15, cx - 4, cy + 23, BLACK);
 
       } else if (condition == "snowy" || condition == "hail") {
-        draw_cloud(cx, cy - 15);
-        for (int dx = -28; dx <= 28; dx += 28) {
-          it.line(cx + dx - 6, cy + 29, cx + dx + 6, cy + 29, BLACK);
-          it.line(cx + dx, cy + 23, cx + dx, cy + 35, BLACK);
-          it.line(cx + dx - 4, cy + 25, cx + dx + 4, cy + 33, BLACK);
-          it.line(cx + dx + 4, cy + 25, cx + dx - 4, cy + 33, BLACK);
+        draw_cloud(cx, cy - 7);
+        for (int dx = -12; dx <= 12; dx += 12) {
+          it.line(cx + dx - 3, cy + 14, cx + dx + 3, cy + 14, BLACK);
+          it.line(cx + dx, cy + 11, cx + dx, cy + 17, BLACK);
         }
 
       } else if (condition == "fog") {
-        draw_cloud(cx, cy - 18);
-        it.line(cx - 44, cy + 22, cx + 44, cy + 22, DARK_GRAY);
-        it.line(cx - 34, cy + 34, cx + 34, cy + 34, MID_GRAY);
+        draw_cloud(cx, cy - 8);
+        it.line(cx - 20, cy + 11, cx + 20, cy + 11, DARK_GRAY);
+        it.line(cx - 15, cy + 17, cx + 15, cy + 17, MID_GRAY);
 
       } else if (condition == "windy" || condition == "windy-variant") {
-        it.line(cx - 43, cy - 18, cx + 30, cy - 18, DARK_GRAY);
-        it.circle(cx + 30, cy - 8, 10, DARK_GRAY);
-        it.line(cx - 43, cy, cx + 43, cy, BLACK);
-        it.line(cx - 43, cy + 18, cx + 23, cy + 18, DARK_GRAY);
+        it.line(cx - 20, cy - 8, cx + 14, cy - 8, DARK_GRAY);
+        it.circle(cx + 14, cy - 4, 4, DARK_GRAY);
+        it.line(cx - 20, cy, cx + 20, cy, BLACK);
+        it.line(cx - 20, cy + 8, cx + 11, cy + 8, DARK_GRAY);
 
       } else {
         draw_cloud(cx, cy);
@@ -270,7 +268,7 @@
 
       it.print(
         SCREEN_WIDTH / 2,
-        300,
+        48,
         id(font_clock),
         BLACK,
         TextAlign::CENTER,
@@ -323,7 +321,7 @@
 
       it.print(
         SCREEN_WIDTH / 2,
-        500,
+        116,
         id(font_date),
         DARK_GRAY,
         TextAlign::CENTER,
@@ -334,7 +332,7 @@
 
       it.print(
         SCREEN_WIDTH / 2,
-        300,
+        48,
         id(font_clock),
         BLACK,
         TextAlign::CENTER,
@@ -347,7 +345,7 @@
     // CURRENT WEATHER
     // ----------------------------------------------------------
 
-    it.filled_rectangle(300, 590, SCREEN_WIDTH - 600, 3, LIGHT_GRAY);
+    it.filled_rectangle(MARGIN, 145, SCREEN_WIDTH - (MARGIN * 2), 2, LIGHT_GRAY);
 
     std::string current_condition = id(weather_condition).state;
     std::string condition_label = current_condition;
@@ -385,21 +383,21 @@
       condition_label = "Exceptional weather";
     }
 
-    draw_weather_sprite(current_condition, 745, 687);
+    draw_weather_sprite(current_condition, 325, 188);
 
     if (id(weather_temperature).has_state()) {
       it.printf(
-        970, 665, id(font_weather_temp), BLACK, TextAlign::CENTER,
+        400, 174, id(font_weather_temp), BLACK, TextAlign::CENTER,
         "%.0f\u00B0", id(weather_temperature).state
       );
     } else {
       it.print(
-        970, 665, id(font_weather_temp), MID_GRAY, TextAlign::CENTER, "--\u00B0"
+        400, 174, id(font_weather_temp), MID_GRAY, TextAlign::CENTER, "--\u00B0"
       );
     }
 
     it.print(
-      970, 747, id(font_weather_condition), DARK_GRAY,
+      505, 186, id(font_weather_condition), DARK_GRAY,
       TextAlign::CENTER, condition_label.c_str()
     );
 
@@ -408,7 +406,7 @@
     // SEVEN-DAY FORECAST
     // ----------------------------------------------------------
 
-    it.filled_rectangle(MARGIN, 815, SCREEN_WIDTH - (MARGIN * 2), 3, LIGHT_GRAY);
+    it.filled_rectangle(MARGIN, 226, SCREEN_WIDTH - (MARGIN * 2), 2, LIGHT_GRAY);
 
     std::string forecast_conditions[7] = {
       id(forecast_0_condition).state, id(forecast_1_condition).state,
@@ -557,96 +555,96 @@
       }
 
       if (i > 0)
-        it.filled_rectangle(MARGIN + (cell_width * i), 850, 2, 400, PALE_GRAY);
+        it.filled_rectangle(MARGIN + (cell_width * i), 236, 1, 209, PALE_GRAY);
 
       it.print(
-        center_x, 870, id(font_forecast_day), DARK_GRAY,
+        center_x, 242, id(font_forecast_day), DARK_GRAY,
         TextAlign::CENTER, day_label.c_str()
       );
 
-      draw_weather_sprite(forecast_conditions[i], center_x, 965);
+      draw_weather_sprite(forecast_conditions[i], center_x, 281);
 
       if (has_high[i] && has_low[i]) {
         it.printf(
-          center_x, 1052, id(font_forecast_temp), BLACK,
-          TextAlign::CENTER, "H %.0f\u00B0  L %.0f\u00B0", forecast_highs[i], forecast_lows[i]
+          center_x, 316, id(font_forecast_temp), BLACK,
+          TextAlign::CENTER, "%.0f\u00B0 / %.0f\u00B0", forecast_highs[i], forecast_lows[i]
         );
       } else {
         it.print(
-          center_x, 1052, id(font_forecast_temp), MID_GRAY,
-          TextAlign::CENTER, "H --\u00B0  L --\u00B0"
+          center_x, 316, id(font_forecast_temp), MID_GRAY,
+          TextAlign::CENTER, "--\u00B0 / --\u00B0"
         );
       }
 
       // Small rain-drop sprite beside the precipitation probability.
-      it.filled_circle(center_x - 88, 1134, 5, MID_GRAY);
-      it.line(center_x - 88, 1119, center_x - 94, 1130, MID_GRAY);
-      it.line(center_x - 88, 1119, center_x - 82, 1130, MID_GRAY);
+      it.filled_circle(center_x - 32, 348, 3, MID_GRAY);
+      it.line(center_x - 32, 339, center_x - 36, 346, MID_GRAY);
+      it.line(center_x - 32, 339, center_x - 28, 346, MID_GRAY);
 
       if (has_rain[i]) {
         it.printf(
-          center_x + 20, 1124, id(font_forecast_rain), DARK_GRAY,
-          TextAlign::CENTER, "%.0f%% rain", forecast_rain[i]
+          center_x + 6, 340, id(font_forecast_rain), DARK_GRAY,
+          TextAlign::CENTER, "%.0f%%", forecast_rain[i]
         );
       } else if (has_precipitation[i]) {
         it.printf(
-          center_x + 20, 1124, id(font_forecast_rain), DARK_GRAY,
-          TextAlign::CENTER, "%.1f %s rain",
+          center_x + 6, 340, id(font_forecast_rain), DARK_GRAY,
+          TextAlign::CENTER, "%.1f%s",
           forecast_precipitation[i], precipitation_unit.c_str()
         );
       } else {
         it.print(
-          center_x + 20, 1124, id(font_forecast_rain), MID_GRAY,
-          TextAlign::CENTER, "-- rain"
+          center_x + 6, 340, id(font_forecast_rain), MID_GRAY,
+          TextAlign::CENTER, "--"
         );
       }
 
       // Humidity drop sprite and relative humidity.
-      it.filled_circle(center_x - 88, 1181, 5, MID_GRAY);
-      it.line(center_x - 88, 1166, center_x - 94, 1177, MID_GRAY);
-      it.line(center_x - 88, 1166, center_x - 82, 1177, MID_GRAY);
+      it.filled_circle(center_x - 32, 375, 3, MID_GRAY);
+      it.line(center_x - 32, 366, center_x - 36, 373, MID_GRAY);
+      it.line(center_x - 32, 366, center_x - 28, 373, MID_GRAY);
 
       if (has_humidity[i]) {
         it.printf(
-          center_x + 20, 1171, id(font_forecast_rain), DARK_GRAY,
+          center_x + 6, 367, id(font_forecast_rain), DARK_GRAY,
           TextAlign::CENTER, "%.0f%% RH", forecast_humidity[i]
         );
       } else {
         it.print(
-          center_x + 20, 1171, id(font_forecast_rain), MID_GRAY,
+          center_x + 6, 367, id(font_forecast_rain), MID_GRAY,
           TextAlign::CENTER, "--% RH"
         );
       }
 
       // Wind sprite: two waves centred vertically against the speed label.
-      it.line(center_x - 96, 1212, center_x - 90, 1208, MID_GRAY);
-      it.line(center_x - 90, 1208, center_x - 84, 1212, MID_GRAY);
-      it.line(center_x - 84, 1212, center_x - 78, 1216, MID_GRAY);
-      it.line(center_x - 78, 1216, center_x - 72, 1212, MID_GRAY);
-      it.line(center_x - 72, 1212, center_x - 66, 1208, MID_GRAY);
-      it.line(center_x - 66, 1208, center_x - 60, 1212, MID_GRAY);
+      it.line(center_x - 38, 395, center_x - 34, 392, MID_GRAY);
+      it.line(center_x - 34, 392, center_x - 30, 395, MID_GRAY);
+      it.line(center_x - 30, 395, center_x - 26, 398, MID_GRAY);
+      it.line(center_x - 26, 398, center_x - 22, 395, MID_GRAY);
+      it.line(center_x - 22, 395, center_x - 18, 392, MID_GRAY);
+      it.line(center_x - 18, 392, center_x - 14, 395, MID_GRAY);
 
-      it.line(center_x - 92, 1224, center_x - 86, 1220, DARK_GRAY);
-      it.line(center_x - 86, 1220, center_x - 80, 1224, DARK_GRAY);
-      it.line(center_x - 80, 1224, center_x - 74, 1228, DARK_GRAY);
-      it.line(center_x - 74, 1228, center_x - 68, 1224, DARK_GRAY);
-      it.line(center_x - 68, 1224, center_x - 62, 1220, DARK_GRAY);
+      it.line(center_x - 36, 403, center_x - 32, 400, DARK_GRAY);
+      it.line(center_x - 32, 400, center_x - 28, 403, DARK_GRAY);
+      it.line(center_x - 28, 403, center_x - 24, 406, DARK_GRAY);
+      it.line(center_x - 24, 406, center_x - 20, 403, DARK_GRAY);
+      it.line(center_x - 20, 403, center_x - 16, 400, DARK_GRAY);
 
       if (has_wind[i]) {
         it.printf(
-          center_x + 20, 1218, id(font_forecast_rain), DARK_GRAY,
+          center_x + 8, 391, id(font_forecast_rain), DARK_GRAY,
           TextAlign::CENTER, "%.0f %s", forecast_wind[i], wind_unit.c_str()
         );
       } else {
         it.print(
-          center_x + 20, 1218, id(font_forecast_rain), MID_GRAY,
+          center_x + 8, 391, id(font_forecast_rain), MID_GRAY,
           TextAlign::CENTER, "-- wind"
         );
       }
     }
 
     it.print(
-      SCREEN_WIDTH / 2, 1345, id(font_meta), MID_GRAY,
+      SCREEN_WIDTH / 2, 452, id(font_meta), MID_GRAY,
       TextAlign::CENTER, "Kitchen"
     );
 
@@ -807,17 +805,17 @@
   // RECIPE TITLE
   // ============================================================
 
-  int title_y = 55;
+  int title_y = 12;
 
   title_y = draw_wrapped(
     title,
     MARGIN,
     title_y,
     SCREEN_WIDTH - (MARGIN * 2),
-    82,
+    37,
     id(font_title),
     BLACK,
-    225
+    88
   );
 
 
@@ -825,13 +823,13 @@
   // HEADER SEPARATOR
   // ============================================================
 
-  const int separator_y = 245;
+  const int separator_y = 96;
 
   it.filled_rectangle(
     MARGIN,
     separator_y,
     SCREEN_WIDTH - (MARGIN * 2),
-    3,
+    2,
     DARK_GRAY
   );
 
@@ -848,7 +846,7 @@
 
     it.print(
       MARGIN,
-      305,
+      112,
       id(font_heading),
       BLACK,
       TextAlign::TOP_LEFT,
@@ -858,7 +856,7 @@
     if (!servings.empty()) {
       it.printf(
         SCREEN_WIDTH - MARGIN,
-        320,
+        117,
         id(font_meta),
         DARK_GRAY,
         TextAlign::TOP_RIGHT,
@@ -877,33 +875,33 @@
     const std::string time_values[3] = {total_time, prep_time, cook_time};
 
     it.filled_rectangle(
-      MARGIN, 405, SCREEN_WIDTH - (MARGIN * 2), 2, LIGHT_GRAY
+      MARGIN, 158, SCREEN_WIDTH - (MARGIN * 2), 2, LIGHT_GRAY
     );
 
     for (int i = 0; i < 3; i++) {
       it.print(
-        time_centres[i], 470, id(font_time_label), MID_GRAY,
+        time_centres[i], 183, id(font_time_label), MID_GRAY,
         TextAlign::CENTER, time_labels[i]
       );
       it.print(
-        time_centres[i], 535, id(font_time_value), BLACK,
+        time_centres[i], 210, id(font_time_value), BLACK,
         TextAlign::CENTER, time_values[i].c_str()
       );
     }
 
     it.filled_rectangle(
-      MARGIN + time_column_width, 440, 2, 130, PALE_GRAY
+      MARGIN + time_column_width, 174, 1, 62, PALE_GRAY
     );
     it.filled_rectangle(
-      MARGIN + (time_column_width * 2), 440, 2, 130, PALE_GRAY
+      MARGIN + (time_column_width * 2), 174, 1, 62, PALE_GRAY
     );
     it.filled_rectangle(
-      MARGIN, 605, SCREEN_WIDTH - (MARGIN * 2), 2, LIGHT_GRAY
+      MARGIN, 250, SCREEN_WIDTH - (MARGIN * 2), 2, LIGHT_GRAY
     );
 
     it.printf(
       SCREEN_WIDTH / 2,
-      700,
+      282,
       id(font_meta),
       DARK_GRAY,
       TextAlign::CENTER,
@@ -919,7 +917,7 @@
 
     it.printf(
       MARGIN,
-      295,
+      110,
       id(font_heading),
       BLACK,
       TextAlign::TOP_LEFT,
@@ -931,7 +929,7 @@
     if (!servings.empty()) {
       it.printf(
         SCREEN_WIDTH - MARGIN,
-        310,
+        116,
         id(font_meta),
         DARK_GRAY,
         TextAlign::TOP_RIGHT,
@@ -945,9 +943,9 @@
     // ----------------------------------------------------------
 
     const int progress_x = MARGIN;
-    const int progress_y = 372;
+    const int progress_y = 151;
     const int progress_width = SCREEN_WIDTH - (MARGIN * 2);
-    const int progress_height = 18;
+    const int progress_height = 10;
     int progress_step = step;
 
     if (progress_step < 0)
@@ -975,12 +973,12 @@
     draw_wrapped(
       instruction,
       MARGIN,
-      420,
+      177,
       SCREEN_WIDTH - (MARGIN * 2),
-      62,
+      27,
       id(font_body),
       BLACK,
-      NAV_TOP - 80
+      NAV_TOP - 12
     );
 
   } else {
@@ -991,7 +989,7 @@
 
     it.print(
       MARGIN,
-      295,
+      110,
       id(font_heading),
       BLACK,
       TextAlign::TOP_LEFT,
@@ -1001,7 +999,7 @@
     if (!servings.empty()) {
       it.printf(
         SCREEN_WIDTH - MARGIN,
-        310,
+        116,
         id(font_meta),
         DARK_GRAY,
         TextAlign::TOP_RIGHT,
@@ -1010,13 +1008,13 @@
       );
     }
 
-    const int ingredients_y = 420;
-    const int ingredients_max_y = NAV_TOP - 80;
-    const int ingredients_gap = 60;
+    const int ingredients_y = 153;
+    const int ingredients_max_y = NAV_TOP - 10;
+    const int ingredients_gap = 24;
     const int ingredients_width =
       (SCREEN_WIDTH - (MARGIN * 2) - ingredients_gap) / 2;
     const int ingredients_right_x = MARGIN + ingredients_width + ingredients_gap;
-    const int ingredient_bullet_indent = 32;
+    const int ingredient_bullet_indent = 16;
     const int ingredient_text_width = ingredients_width - ingredient_bullet_indent;
 
     std::vector<std::string> ingredient_items;
@@ -1092,7 +1090,7 @@
       };
 
     auto *ingredients_font = id(font_body);
-    int ingredients_line_height = 58;
+    int ingredients_line_height = 27;
     int ingredients_end_y = ingredients_y;
     int ingredients_split = find_ingredient_split(
       ingredients_font, ingredients_line_height, ingredients_end_y
@@ -1101,7 +1099,7 @@
     // Resize only when the optimally balanced pair of columns cannot fit.
     if (ingredients_end_y > ingredients_max_y) {
       ingredients_font = id(font_body_compact);
-      ingredients_line_height = 40;
+      ingredients_line_height = 21;
       ingredients_split = find_ingredient_split(
         ingredients_font, ingredients_line_height, ingredients_end_y
       );
@@ -1109,7 +1107,7 @@
 
     if (ingredients_end_y > ingredients_max_y) {
       ingredients_font = id(font_body_small);
-      ingredients_line_height = 25;
+      ingredients_line_height = 17;
       ingredients_split = find_ingredient_split(
         ingredients_font, ingredients_line_height, ingredients_end_y
       );
@@ -1122,9 +1120,9 @@
         for (int i = first; i < last; i++) {
           if (item_y + ingredients_line_height <= ingredients_max_y) {
             it.filled_circle(
-              column_x + 8,
+              column_x + 4,
               item_y + (ingredients_line_height / 2),
-              5,
+              3,
               DARK_GRAY
             );
           }
@@ -1154,7 +1152,7 @@
     it.filled_rectangle(
       MARGIN + ingredients_width + (ingredients_gap / 2),
       ingredients_y,
-      2,
+      1,
       ingredients_max_y - ingredients_y,
       PALE_GRAY
     );
@@ -1186,7 +1184,7 @@
     0,
     NAV_TOP,
     SCREEN_WIDTH,
-    3,
+    2,
     DARK_GRAY
   );
 
@@ -1196,18 +1194,18 @@
   // ------------------------------------------------------------
 
   it.filled_rectangle(
-    600,
+    256,
     NAV_TOP,
-    2,
+    1,
     SCREEN_HEIGHT - NAV_TOP,
     MID_GRAY
   );
 
 
   it.filled_rectangle(
-    1272,
+    544,
     NAV_TOP,
-    2,
+    1,
     SCREEN_HEIGHT - NAV_TOP,
     MID_GRAY
   );
@@ -1221,8 +1219,8 @@
 
     // Start with ingredients, then use the centre button to toggle instructions.
     it.print(
-      300,
-      1315,
+      128,
+      449,
       id(font_button),
       MID_GRAY,
       TextAlign::CENTER,
@@ -1230,8 +1228,8 @@
     );
 
     it.print(
-      936,
-      1315,
+      400,
+      449,
       id(font_button),
       BLACK,
       TextAlign::CENTER,
@@ -1239,8 +1237,8 @@
     );
 
     it.print(
-      1572,
-      1315,
+      672,
+      449,
       id(font_button),
       MID_GRAY,
       TextAlign::CENTER,
@@ -1256,8 +1254,8 @@
     if (step > 1) {
 
       it.print(
-        300,
-        1315,
+        128,
+        449,
         id(font_button),
         BLACK,
         TextAlign::CENTER,
@@ -1267,8 +1265,8 @@
     } else {
 
       it.print(
-        300,
-        1315,
+        128,
+        449,
         id(font_button),
         BLACK,
         TextAlign::CENTER,
@@ -1282,8 +1280,8 @@
     // ----------------------------------------------------------
 
     it.print(
-      936,
-      1315,
+      400,
+      449,
       id(font_button),
       BLACK,
       TextAlign::CENTER,
@@ -1298,8 +1296,8 @@
     if (step < step_count) {
 
       it.print(
-        1572,
-        1315,
+        672,
+        449,
         id(font_button),
         BLACK,
         TextAlign::CENTER,
@@ -1309,8 +1307,8 @@
     } else {
 
       it.print(
-        1572,
-        1315,
+        672,
+        449,
         id(font_button),
         MID_GRAY,
         TextAlign::CENTER,
@@ -1327,8 +1325,8 @@
     // Previous / Next aren't used on the ingredients page.
 
     it.print(
-      300,
-      1315,
+      128,
+      449,
       id(font_button),
       MID_GRAY,
       TextAlign::CENTER,
@@ -1337,8 +1335,8 @@
 
 
     it.print(
-      936,
-      1315,
+      400,
+      449,
       id(font_button),
       BLACK,
       TextAlign::CENTER,
@@ -1347,8 +1345,8 @@
 
 
     it.print(
-      1572,
-      1315,
+      672,
+      449,
       id(font_button),
       MID_GRAY,
       TextAlign::CENTER,
