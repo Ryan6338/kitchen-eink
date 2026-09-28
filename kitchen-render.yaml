@@ -1016,6 +1016,8 @@
     const int ingredients_width =
       (SCREEN_WIDTH - (MARGIN * 2) - ingredients_gap) / 2;
     const int ingredients_right_x = MARGIN + ingredients_width + ingredients_gap;
+    const int ingredient_bullet_indent = 32;
+    const int ingredient_text_width = ingredients_width - ingredient_bullet_indent;
 
     std::vector<std::string> ingredient_items;
     std::string ingredient_item;
@@ -1053,7 +1055,7 @@
         if (item_count < 2) {
           std::string only_column = build_ingredient_column(0, item_count);
           end_y = draw_wrapped(
-            only_column, MARGIN, ingredients_y, ingredients_width,
+            only_column, MARGIN, ingredients_y, ingredient_text_width,
             line_height, font, BLACK, ingredients_max_y, false
           );
           return item_count;
@@ -1068,11 +1070,11 @@
           std::string left = build_ingredient_column(0, split);
           std::string right = build_ingredient_column(split, item_count);
           int left_end_y = draw_wrapped(
-            left, MARGIN, ingredients_y, ingredients_width,
+            left, MARGIN, ingredients_y, ingredient_text_width,
             line_height, font, BLACK, ingredients_max_y, false
           );
           int right_end_y = draw_wrapped(
-            right, ingredients_right_x, ingredients_y, ingredients_width,
+            right, ingredients_right_x, ingredients_y, ingredient_text_width,
             line_height, font, BLACK, ingredients_max_y, false
           );
           int candidate_end_y = left_end_y > right_end_y
@@ -1113,33 +1115,40 @@
       );
     }
 
-    std::string left_ingredients = build_ingredient_column(
-      0, ingredients_split
-    );
-    std::string right_ingredients = build_ingredient_column(
-      ingredients_split, (int) ingredient_items.size()
-    );
+    auto draw_ingredient_items =
+      [&](int first, int last, int column_x) {
+        int item_y = ingredients_y;
 
-    draw_wrapped(
-      left_ingredients,
-      MARGIN,
-      ingredients_y,
-      ingredients_width,
-      ingredients_line_height,
-      ingredients_font,
-      BLACK,
-      ingredients_max_y
-    );
+        for (int i = first; i < last; i++) {
+          if (item_y + ingredients_line_height <= ingredients_max_y) {
+            it.filled_circle(
+              column_x + 8,
+              item_y + (ingredients_line_height / 2),
+              5,
+              DARK_GRAY
+            );
+          }
 
-    draw_wrapped(
-      right_ingredients,
-      ingredients_right_x,
-      ingredients_y,
-      ingredients_width,
-      ingredients_line_height,
-      ingredients_font,
-      BLACK,
-      ingredients_max_y
+          // The first and all wrapped lines share this text x-coordinate,
+          // producing a hanging indent to the right of the bullet.
+          item_y = draw_wrapped(
+            ingredient_items[i],
+            column_x + ingredient_bullet_indent,
+            item_y,
+            ingredient_text_width,
+            ingredients_line_height,
+            ingredients_font,
+            BLACK,
+            ingredients_max_y
+          );
+        }
+      };
+
+    draw_ingredient_items(0, ingredients_split, MARGIN);
+    draw_ingredient_items(
+      ingredients_split,
+      (int) ingredient_items.size(),
+      ingredients_right_x
     );
 
     it.filled_rectangle(
