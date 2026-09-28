@@ -112,6 +112,22 @@ font:
       type: gfonts
       family: Roboto
       weight: 500
+    id: font_time_label
+    size: 24
+    bpp: 4
+
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 500
+    id: font_time_value
+    size: 34
+    bpp: 4
+
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 500
     id: font_heading
     size: 54
     bpp: 4
@@ -291,6 +307,30 @@ text_sensor:
     id: recipe_servings
     entity_id: sensor.kitchen_recipe_display
     attribute: servings
+    on_value:
+      then:
+        - script.execute: refresh_display
+
+  - platform: homeassistant
+    id: recipe_total_time
+    entity_id: sensor.kitchen_recipe_display
+    attribute: total_time
+    on_value:
+      then:
+        - script.execute: refresh_display
+
+  - platform: homeassistant
+    id: recipe_prep_time
+    entity_id: sensor.kitchen_recipe_display
+    attribute: prep_time
+    on_value:
+      then:
+        - script.execute: refresh_display
+
+  - platform: homeassistant
+    id: recipe_cook_time
+    entity_id: sensor.kitchen_recipe_display
+    attribute: cook_time
     on_value:
       then:
         - script.execute: refresh_display

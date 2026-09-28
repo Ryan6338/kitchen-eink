@@ -1,0 +1,25 @@
+alias: Search Kitchen Recipes
+description: >-
+  Search Mealie for recipes matching a user's requested meal. Use this before
+  Set Kitchen Recipe. Return the candidate recipes so you can choose the best
+  match. If multiple recipes are plausible, ask the user which one they want.
+fields:
+  query:
+    name: Recipe search
+    description: The meal or recipe name the user is looking for.
+    required: true
+    selector:
+      text: null
+sequence:
+  - action: mealie.get_recipes
+    data:
+      config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+      search_terms: '{{ query }}'
+      result_limit: 5
+    response_variable: mealie_results
+  - variables:
+      result:
+        search_query: '{{ query }}'
+        recipes: '{{ mealie_results }}'
+  - stop: Recipe search completed
+    response_variable: result

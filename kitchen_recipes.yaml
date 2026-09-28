@@ -1,0 +1,141 @@
+input_text:
+  kitchen_recipe_slug:
+    name: Kitchen Recipe Slug
+    max: 255
+
+
+input_number:
+  kitchen_recipe_step:
+    name: Kitchen Recipe Step
+    min: 1
+    max: 100
+    step: 1
+    mode: box
+
+
+template:
+
+  # ---------------------------------------------------------------
+  # FETCH RECIPE FROM MEALIE
+  # ---------------------------------------------------------------
+
+  - triggers:
+      - trigger: state
+        entity_id: input_text.kitchen_recipe_slug
+        not_to:
+          - ""
+          - unknown
+          - unavailable
+
+    actions:
+      - action: mealie.get_recipe
+        data:
+          config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+          recipe_id: "{{ states('input_text.kitchen_recipe_slug') }}"
+        response_variable: mealie_result
+
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.kitchen_recipe_step
+        data:
+          value: 1
+
+    sensor:
+      - name: Kitchen Loaded Recipe
+        unique_id: kitchen_loaded_recipe
+
+        state: "{{ mealie_result.recipe.name }}"
+
+        attributes:
+          slug: "{{ mealie_result.recipe.slug }}"
+
+          servings: "{{ mealie_result.recipe.recipe_servings }}"
+
+          total_time: "{{ mealie_result.recipe.total_time }}"
+
+          prep_time: "{{ mealie_result.recipe.prep_time }}"
+
+          cook_time: >-
+            {{
+              mealie_result.recipe.cook_time
+              | default(mealie_result.recipe.perform_time, true)
+            }}
+
+          ingredients: >-
+            {{
+              mealie_result.recipe.ingredients
+              | map(attribute='display')
+              | list
+            }}
+
+          instructions: >-
+            {{
+              mealie_result.recipe.instructions
+              | map(attribute='text')
+              | list
+            }}
+
+          instruction_titles: >-
+            {{
+              mealie_result.recipe.instructions
+              | map(attribute='title')
+              | list
+            }}
+
+          step_count: >-
+            {{ mealie_result.recipe.instructions | count }}
+
+
+  # ---------------------------------------------------------------
+  # DATA PRESENTED TO ESPHOME
+  # ---------------------------------------------------------------
+  
+  - sensor:
+      - name: Kitchen Recipe Display
+        unique_id: kitchen_recipe_display
+
+        state: "{{ states('sensor.kitchen_loaded_recipe') }}"
+
+        attributes:
+          title: >-
+            {{ states('sensor.kitchen_loaded_recipe') }}
+
+          servings: >-
+            {{ state_attr('sensor.kitchen_loaded_recipe', 'servings') }}
+
+          total_time: >-
+            {{ state_attr('sensor.kitchen_loaded_recipe', 'total_time') }}
+
+          prep_time: >-
+            {{ state_attr('sensor.kitchen_loaded_recipe', 'prep_time') }}
+
+          cook_time: >-
+            {{ state_attr('sensor.kitchen_loaded_recipe', 'cook_time') }}
+
+          step: >-
+            {{ states('input_number.kitchen_recipe_step') | int(1) }}
+
+          step_count: >-
+            {{ state_attr('sensor.kitchen_loaded_recipe', 'step_count') | int(0) }}
+
+          instruction_title: >-
+            {% set titles = state_attr('sensor.kitchen_loaded_recipe', 'instruction_titles') or [] %}
+            {% set step = states('input_number.kitchen_recipe_step') | int(1) %}
+            {% if 1 <= step <= titles | count %}
+              {{ titles[step - 1] or '' }}
+            {% else %}
+              {{ '' }}
+            {% endif %}
+
+          instruction: >-
+            {% set instructions = state_attr('sensor.kitchen_loaded_recipe', 'instructions') or [] %}
+            {% set step = states('input_number.kitchen_recipe_step') | int(1) %}
+            {% if 1 <= step <= instructions | count %}
+              {{ instructions[step - 1] }}
+            {% else %}
+              No instruction available.
+            {% endif %}
+
+          ingredients: >-
+            {% set ingredients = state_attr('sensor.kitchen_loaded_recipe', 'ingredients') or [] %}
+            {{ ingredients | join('\n') }}

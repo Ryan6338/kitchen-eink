@@ -1,0 +1,45 @@
+alias: Set Kitchen Recipe
+description: >-
+  Load a specific Mealie recipe onto the kitchen recipe display. Only call this
+  after identifying the correct recipe with Search Kitchen Recipes.
+fields:
+  recipe_slug:
+    name: Recipe slug
+    description: Exact Mealie recipe slug returned by Search Kitchen Recipes.
+    required: true
+    selector:
+      text: null
+  recipe_name:
+    name: Recipe name
+    description: Human-readable recipe name selected from the search results.
+    required: false
+    selector:
+      text: null
+sequence:
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.kitchen_recipe_slug
+    data:
+      value: ''
+  - delay:
+      milliseconds: 100
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.kitchen_recipe_slug
+    data:
+      value: '{{ recipe_slug }}'
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.kitchen_recipe_step
+    data:
+      value: 1
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.kitchen_recipe_active
+  - variables:
+      result:
+        success: true
+        recipe_slug: '{{ recipe_slug }}'
+        recipe_name: '{{ recipe_name | default(recipe_slug, true) }}'
+  - stop: Recipe loaded onto the kitchen display
+    response_variable: result

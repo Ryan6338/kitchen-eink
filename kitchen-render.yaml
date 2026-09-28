@@ -677,6 +677,26 @@
   }
 
 
+  auto recipe_time_or_dash = [](std::string value) {
+    if (
+      value.empty() ||
+      value == "unknown" ||
+      value == "unavailable" ||
+      value == "None" ||
+      value == "none" ||
+      value == "null"
+    ) {
+      return std::string("--");
+    }
+
+    return value;
+  };
+
+  std::string total_time = recipe_time_or_dash(id(recipe_total_time).state);
+  std::string prep_time = recipe_time_or_dash(id(recipe_prep_time).state);
+  std::string cook_time = recipe_time_or_dash(id(recipe_cook_time).state);
+
+
   std::string instruction = id(recipe_instruction).state;
 
   if (
@@ -757,6 +777,41 @@
 
 
   // ============================================================
+  // RECIPE TIME OVERVIEW
+  // ============================================================
+
+  const int time_column_width = (SCREEN_WIDTH - (MARGIN * 2)) / 3;
+  const int time_centres[3] = {
+    MARGIN + (time_column_width / 2),
+    MARGIN + time_column_width + (time_column_width / 2),
+    MARGIN + (time_column_width * 2) + (time_column_width / 2)
+  };
+  const char *time_labels[3] = {"TOTAL", "PREP", "COOK"};
+  const std::string time_values[3] = {total_time, prep_time, cook_time};
+
+  for (int i = 0; i < 3; i++) {
+    it.print(
+      time_centres[i], 282, id(font_time_label), MID_GRAY,
+      TextAlign::CENTER, time_labels[i]
+    );
+    it.print(
+      time_centres[i], 329, id(font_time_value), BLACK,
+      TextAlign::CENTER, time_values[i].c_str()
+    );
+  }
+
+  it.filled_rectangle(
+    MARGIN + time_column_width, 275, 2, 92, PALE_GRAY
+  );
+  it.filled_rectangle(
+    MARGIN + (time_column_width * 2), 275, 2, 92, PALE_GRAY
+  );
+  it.filled_rectangle(
+    MARGIN, 382, SCREEN_WIDTH - (MARGIN * 2), 2, LIGHT_GRAY
+  );
+
+
+  // ============================================================
   // PAGE CONTENT
   // ============================================================
 
@@ -773,7 +828,7 @@
 
     it.printf(
       MARGIN,
-      295,
+      420,
       id(font_heading),
       BLACK,
       TextAlign::TOP_LEFT,
@@ -791,7 +846,7 @@
 
       it.printf(
         SCREEN_WIDTH - MARGIN,
-        310,
+        435,
         id(font_meta),
         DARK_GRAY,
         TextAlign::TOP_RIGHT,
@@ -808,7 +863,7 @@
     draw_wrapped(
       instruction,
       MARGIN,
-      420,
+      520,
       SCREEN_WIDTH - (MARGIN * 2),
       62,
       id(font_body),
@@ -824,7 +879,7 @@
 
     it.print(
       MARGIN,
-      295,
+      420,
       id(font_heading),
       BLACK,
       TextAlign::TOP_LEFT,
@@ -836,7 +891,7 @@
 
       it.printf(
         SCREEN_WIDTH - MARGIN,
-        310,
+        435,
         id(font_meta),
         DARK_GRAY,
         TextAlign::TOP_RIGHT,
@@ -849,7 +904,7 @@
     draw_wrapped(
       ingredients,
       MARGIN,
-      420,
+      520,
       SCREEN_WIDTH - (MARGIN * 2),
       58,
       id(font_body),
