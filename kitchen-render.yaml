@@ -566,58 +566,58 @@
       }
 
       // Small rain-drop sprite beside the precipitation probability.
-      it.filled_circle(center_x - 38, 1134, 5, MID_GRAY);
-      it.line(center_x - 38, 1119, center_x - 44, 1130, MID_GRAY);
-      it.line(center_x - 38, 1119, center_x - 32, 1130, MID_GRAY);
+      it.filled_circle(center_x - 88, 1134, 5, MID_GRAY);
+      it.line(center_x - 88, 1119, center_x - 94, 1130, MID_GRAY);
+      it.line(center_x - 88, 1119, center_x - 82, 1130, MID_GRAY);
 
-      if (has_rain[i] && (forecast_rain[i] > 0 || !has_precipitation[i])) {
+      if (has_rain[i]) {
         it.printf(
-          center_x + 8, 1124, id(font_forecast_rain), DARK_GRAY,
+          center_x + 20, 1124, id(font_forecast_rain), DARK_GRAY,
           TextAlign::CENTER, "%.0f%% rain", forecast_rain[i]
         );
       } else if (has_precipitation[i]) {
         it.printf(
-          center_x + 8, 1124, id(font_forecast_rain), DARK_GRAY,
+          center_x + 20, 1124, id(font_forecast_rain), DARK_GRAY,
           TextAlign::CENTER, "%.1f %s rain",
           forecast_precipitation[i], precipitation_unit.c_str()
         );
       } else {
         it.print(
-          center_x + 8, 1124, id(font_forecast_rain), MID_GRAY,
+          center_x + 20, 1124, id(font_forecast_rain), MID_GRAY,
           TextAlign::CENTER, "-- rain"
         );
       }
 
       // Humidity drop sprite and relative humidity.
-      it.filled_circle(center_x - 38, 1181, 5, MID_GRAY);
-      it.line(center_x - 38, 1166, center_x - 44, 1177, MID_GRAY);
-      it.line(center_x - 38, 1166, center_x - 32, 1177, MID_GRAY);
+      it.filled_circle(center_x - 88, 1181, 5, MID_GRAY);
+      it.line(center_x - 88, 1166, center_x - 94, 1177, MID_GRAY);
+      it.line(center_x - 88, 1166, center_x - 82, 1177, MID_GRAY);
 
       if (has_humidity[i]) {
         it.printf(
-          center_x + 8, 1171, id(font_forecast_rain), DARK_GRAY,
+          center_x + 20, 1171, id(font_forecast_rain), DARK_GRAY,
           TextAlign::CENTER, "%.0f%% RH", forecast_humidity[i]
         );
       } else {
         it.print(
-          center_x + 8, 1171, id(font_forecast_rain), MID_GRAY,
+          center_x + 20, 1171, id(font_forecast_rain), MID_GRAY,
           TextAlign::CENTER, "--% RH"
         );
       }
 
       // Wind sprite and speed in the provider's configured unit.
-      it.line(center_x - 49, 1219, center_x - 28, 1219, MID_GRAY);
-      it.line(center_x - 45, 1226, center_x - 24, 1226, DARK_GRAY);
-      it.line(center_x - 40, 1233, center_x - 28, 1233, MID_GRAY);
+      it.line(center_x - 82, 1219, center_x - 61, 1219, MID_GRAY);
+      it.line(center_x - 78, 1226, center_x - 57, 1226, DARK_GRAY);
+      it.line(center_x - 73, 1233, center_x - 61, 1233, MID_GRAY);
 
       if (has_wind[i]) {
         it.printf(
-          center_x + 18, 1209, id(font_forecast_rain), DARK_GRAY,
+          center_x + 20, 1209, id(font_forecast_rain), DARK_GRAY,
           TextAlign::CENTER, "%.0f %s", forecast_wind[i], wind_unit.c_str()
         );
       } else {
         it.print(
-          center_x + 18, 1209, id(font_forecast_rain), MID_GRAY,
+          center_x + 20, 1209, id(font_forecast_rain), MID_GRAY,
           TextAlign::CENTER, "-- wind"
         );
       }
