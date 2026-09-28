@@ -141,17 +141,26 @@
   auto draw_weather_sprite =
     [&](const std::string &condition, int cx, int cy) {
 
+      auto draw_thick_line =
+        [&](int x1, int y1, int x2, int y2, Color color) {
+          it.line(x1, y1, x2, y2, color);
+          it.line(x1 - 1, y1, x2 - 1, y2, color);
+          it.line(x1 + 1, y1, x2 + 1, y2, color);
+          it.line(x1, y1 - 1, x2, y2 - 1, color);
+          it.line(x1, y1 + 1, x2, y2 + 1, color);
+        };
+
       auto draw_sun = [&](int x, int y) {
         it.filled_circle(x, y, 20, MID_GRAY);
         it.circle(x, y, 21, BLACK);
-        it.line(x, y - 37, x, y - 27, BLACK);
-        it.line(x, y + 27, x, y + 37, BLACK);
-        it.line(x - 37, y, x - 27, y, BLACK);
-        it.line(x + 27, y, x + 37, y, BLACK);
-        it.line(x - 27, y - 27, x - 20, y - 20, BLACK);
-        it.line(x + 20, y + 20, x + 27, y + 27, BLACK);
-        it.line(x + 20, y - 20, x + 27, y - 27, BLACK);
-        it.line(x - 27, y + 27, x - 20, y + 20, BLACK);
+        draw_thick_line(x, y - 37, x, y - 27, BLACK);
+        draw_thick_line(x, y + 27, x, y + 37, BLACK);
+        draw_thick_line(x - 37, y, x - 27, y, BLACK);
+        draw_thick_line(x + 27, y, x + 37, y, BLACK);
+        draw_thick_line(x - 27, y - 27, x - 20, y - 20, BLACK);
+        draw_thick_line(x + 20, y + 20, x + 27, y + 27, BLACK);
+        draw_thick_line(x + 20, y - 20, x + 27, y - 27, BLACK);
+        draw_thick_line(x - 27, y + 27, x - 20, y + 20, BLACK);
       };
 
       auto draw_cloud = [&](int x, int y) {
@@ -167,9 +176,9 @@
         const int count = heavy ? 4 : 3;
         for (int j = 0; j < count; j++) {
           int dx = x - ((count - 1) * spacing) / 2 + (j * spacing);
-          it.line(dx + 5, y + 20, dx - 3, y + 39, BLACK);
+          draw_thick_line(dx + 5, y + 20, dx - 3, y + 39, BLACK);
           if (heavy)
-            it.line(dx + 9, y + 20, dx + 1, y + 39, BLACK);
+            draw_thick_line(dx + 9, y + 20, dx + 1, y + 39, BLACK);
         }
       };
 
@@ -605,19 +614,28 @@
         );
       }
 
-      // Wind sprite and speed in the provider's configured unit.
-      it.line(center_x - 82, 1219, center_x - 61, 1219, MID_GRAY);
-      it.line(center_x - 78, 1226, center_x - 57, 1226, DARK_GRAY);
-      it.line(center_x - 73, 1233, center_x - 61, 1233, MID_GRAY);
+      // Wind sprite: two waves centred vertically against the speed label.
+      it.line(center_x - 96, 1212, center_x - 90, 1208, MID_GRAY);
+      it.line(center_x - 90, 1208, center_x - 84, 1212, MID_GRAY);
+      it.line(center_x - 84, 1212, center_x - 78, 1216, MID_GRAY);
+      it.line(center_x - 78, 1216, center_x - 72, 1212, MID_GRAY);
+      it.line(center_x - 72, 1212, center_x - 66, 1208, MID_GRAY);
+      it.line(center_x - 66, 1208, center_x - 60, 1212, MID_GRAY);
+
+      it.line(center_x - 92, 1224, center_x - 86, 1220, DARK_GRAY);
+      it.line(center_x - 86, 1220, center_x - 80, 1224, DARK_GRAY);
+      it.line(center_x - 80, 1224, center_x - 74, 1228, DARK_GRAY);
+      it.line(center_x - 74, 1228, center_x - 68, 1224, DARK_GRAY);
+      it.line(center_x - 68, 1224, center_x - 62, 1220, DARK_GRAY);
 
       if (has_wind[i]) {
         it.printf(
-          center_x + 20, 1209, id(font_forecast_rain), DARK_GRAY,
+          center_x + 20, 1218, id(font_forecast_rain), DARK_GRAY,
           TextAlign::CENTER, "%.0f %s", forecast_wind[i], wind_unit.c_str()
         );
       } else {
         it.print(
-          center_x + 20, 1209, id(font_forecast_rain), MID_GRAY,
+          center_x + 20, 1218, id(font_forecast_rain), MID_GRAY,
           TextAlign::CENTER, "-- wind"
         );
       }
