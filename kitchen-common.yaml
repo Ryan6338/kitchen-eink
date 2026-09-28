@@ -57,49 +57,7 @@ font:
       family: Roboto
       weight: 300
     id: font_clock
-    size: 88
-    bpp: 4
-  - file:
-      type: gfonts
-      family: Roboto
-      weight: 400
-    id: font_date
-    size: 24
-    bpp: 4
-  - file:
-      type: gfonts
-      family: Roboto
-      weight: 500
-    id: font_weather_temp
-    size: 48
-    bpp: 4
-  - file:
-      type: gfonts
-      family: Roboto
-      weight: 400
-    id: font_weather_condition
-    size: 21
-    bpp: 4
-  - file:
-      type: gfonts
-      family: Roboto
-      weight: 500
-    id: font_forecast_day
-    size: 16
-    bpp: 4
-  - file:
-      type: gfonts
-      family: Roboto
-      weight: 500
-    id: font_forecast_temp
-    size: 15
-    bpp: 4
-  - file:
-      type: gfonts
-      family: Roboto
-      weight: 400
-    id: font_forecast_rain
-    size: 13
+    size: 260
     bpp: 4
   - file:
       type: gfonts
