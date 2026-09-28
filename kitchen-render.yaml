@@ -724,6 +724,62 @@
     ingredients = "Waiting for recipe ingredients...";
   }
 
+  // Roboto does not include every Unicode number-form glyph used by recipe
+  // imports. Convert both single-character and composed fractions to ASCII.
+  auto replace_all = [](
+    std::string &text,
+    const std::string &from,
+    const std::string &to
+  ) {
+    size_t position = 0;
+
+    while ((position = text.find(from, position)) != std::string::npos) {
+      text.replace(position, from.length(), to);
+      position += to.length();
+    }
+  };
+
+  replace_all(ingredients, "¼", "1/4");
+  replace_all(ingredients, "½", "1/2");
+  replace_all(ingredients, "¾", "3/4");
+  replace_all(ingredients, "⅐", "1/7");
+  replace_all(ingredients, "⅑", "1/9");
+  replace_all(ingredients, "⅒", "1/10");
+  replace_all(ingredients, "⅓", "1/3");
+  replace_all(ingredients, "⅔", "2/3");
+  replace_all(ingredients, "⅕", "1/5");
+  replace_all(ingredients, "⅖", "2/5");
+  replace_all(ingredients, "⅗", "3/5");
+  replace_all(ingredients, "⅘", "4/5");
+  replace_all(ingredients, "⅙", "1/6");
+  replace_all(ingredients, "⅚", "5/6");
+  replace_all(ingredients, "⅛", "1/8");
+  replace_all(ingredients, "⅜", "3/8");
+  replace_all(ingredients, "⅝", "5/8");
+  replace_all(ingredients, "⅞", "7/8");
+
+  replace_all(ingredients, "⁄", "/");
+  replace_all(ingredients, "⁰", "0");
+  replace_all(ingredients, "¹", "1");
+  replace_all(ingredients, "²", "2");
+  replace_all(ingredients, "³", "3");
+  replace_all(ingredients, "⁴", "4");
+  replace_all(ingredients, "⁵", "5");
+  replace_all(ingredients, "⁶", "6");
+  replace_all(ingredients, "⁷", "7");
+  replace_all(ingredients, "⁸", "8");
+  replace_all(ingredients, "⁹", "9");
+  replace_all(ingredients, "₀", "0");
+  replace_all(ingredients, "₁", "1");
+  replace_all(ingredients, "₂", "2");
+  replace_all(ingredients, "₃", "3");
+  replace_all(ingredients, "₄", "4");
+  replace_all(ingredients, "₅", "5");
+  replace_all(ingredients, "₆", "6");
+  replace_all(ingredients, "₇", "7");
+  replace_all(ingredients, "₈", "8");
+  replace_all(ingredients, "₉", "9");
+
 
   int step = 1;
 
