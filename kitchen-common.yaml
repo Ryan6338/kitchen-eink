@@ -161,8 +161,9 @@ globals:
 
 # current_page:
 #
-#   0 = Cooking instructions
-#   1 = Ingredients
+#   0 = Recipe overview
+#   1 = Cooking instructions
+#   2 = Ingredients
 
 
 # -------------------------------------------------------------------
@@ -597,14 +598,14 @@ script:
   - id: show_ingredients
     then:
       - lambda: |-
-          id(current_page) = 1;
+          id(current_page) = 2;
       - script.execute: refresh_display
 
 
   - id: show_instructions
     then:
       - lambda: |-
-          id(current_page) = 0;
+          id(current_page) = 1;
       - script.execute: refresh_display
 
 
@@ -659,7 +660,7 @@ binary_sensor:
         - if:
             condition:
               lambda: |-
-                return id(current_page) == 0;
+                return id(current_page) == 1;
             then:
               - homeassistant.action:
                   action: input_number.decrement
@@ -683,9 +684,16 @@ binary_sensor:
               lambda: |-
                 return id(current_page) == 0;
             then:
-              - script.execute: show_ingredients
-            else:
               - script.execute: show_instructions
+            else:
+              - if:
+                  condition:
+                    lambda: |-
+                      return id(current_page) == 1;
+                  then:
+                    - script.execute: show_ingredients
+                  else:
+                    - script.execute: show_instructions
 
 
   - platform: touchscreen
@@ -702,7 +710,7 @@ binary_sensor:
         - if:
             condition:
               lambda: |-
-                return id(current_page) == 0;
+                return id(current_page) == 1;
             then:
               - homeassistant.action:
                   action: input_number.increment

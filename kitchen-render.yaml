@@ -777,76 +777,28 @@
 
 
   // ============================================================
-  // RECIPE TIME OVERVIEW
-  // ============================================================
-
-  const int time_column_width = (SCREEN_WIDTH - (MARGIN * 2)) / 3;
-  const int time_centres[3] = {
-    MARGIN + (time_column_width / 2),
-    MARGIN + time_column_width + (time_column_width / 2),
-    MARGIN + (time_column_width * 2) + (time_column_width / 2)
-  };
-  const char *time_labels[3] = {"TOTAL", "PREP", "COOK"};
-  const std::string time_values[3] = {total_time, prep_time, cook_time};
-
-  for (int i = 0; i < 3; i++) {
-    it.print(
-      time_centres[i], 282, id(font_time_label), MID_GRAY,
-      TextAlign::CENTER, time_labels[i]
-    );
-    it.print(
-      time_centres[i], 329, id(font_time_value), BLACK,
-      TextAlign::CENTER, time_values[i].c_str()
-    );
-  }
-
-  it.filled_rectangle(
-    MARGIN + time_column_width, 275, 2, 92, PALE_GRAY
-  );
-  it.filled_rectangle(
-    MARGIN + (time_column_width * 2), 275, 2, 92, PALE_GRAY
-  );
-  it.filled_rectangle(
-    MARGIN, 382, SCREEN_WIDTH - (MARGIN * 2), 2, LIGHT_GRAY
-  );
-
-
-  // ============================================================
   // PAGE CONTENT
   // ============================================================
 
   if (id(current_page) == 0) {
 
     // ==========================================================
-    // INSTRUCTION PAGE
+    // OVERVIEW PAGE
     // ==========================================================
 
-
-    // ----------------------------------------------------------
-    // STEP INDICATOR
-    // ----------------------------------------------------------
-
-    it.printf(
+    it.print(
       MARGIN,
-      420,
+      305,
       id(font_heading),
       BLACK,
       TextAlign::TOP_LEFT,
-      "Step %d of %d",
-      step,
-      step_count
+      "Overview"
     );
 
-
-    // ----------------------------------------------------------
-    // SERVINGS
-    // ----------------------------------------------------------
-
     if (!servings.empty()) {
-
       it.printf(
         SCREEN_WIDTH - MARGIN,
-        435,
+        320,
         id(font_meta),
         DARK_GRAY,
         TextAlign::TOP_RIGHT,
@@ -855,15 +807,83 @@
       );
     }
 
+    const int time_column_width = (SCREEN_WIDTH - (MARGIN * 2)) / 3;
+    const int time_centres[3] = {
+      MARGIN + (time_column_width / 2),
+      MARGIN + time_column_width + (time_column_width / 2),
+      MARGIN + (time_column_width * 2) + (time_column_width / 2)
+    };
+    const char *time_labels[3] = {"TOTAL", "PREP", "COOK"};
+    const std::string time_values[3] = {total_time, prep_time, cook_time};
 
-    // ----------------------------------------------------------
-    // INSTRUCTION
-    // ----------------------------------------------------------
+    it.filled_rectangle(
+      MARGIN, 405, SCREEN_WIDTH - (MARGIN * 2), 2, LIGHT_GRAY
+    );
+
+    for (int i = 0; i < 3; i++) {
+      it.print(
+        time_centres[i], 470, id(font_time_label), MID_GRAY,
+        TextAlign::CENTER, time_labels[i]
+      );
+      it.print(
+        time_centres[i], 535, id(font_time_value), BLACK,
+        TextAlign::CENTER, time_values[i].c_str()
+      );
+    }
+
+    it.filled_rectangle(
+      MARGIN + time_column_width, 440, 2, 130, PALE_GRAY
+    );
+    it.filled_rectangle(
+      MARGIN + (time_column_width * 2), 440, 2, 130, PALE_GRAY
+    );
+    it.filled_rectangle(
+      MARGIN, 605, SCREEN_WIDTH - (MARGIN * 2), 2, LIGHT_GRAY
+    );
+
+    it.printf(
+      SCREEN_WIDTH / 2,
+      700,
+      id(font_meta),
+      DARK_GRAY,
+      TextAlign::CENTER,
+      "%d steps",
+      step_count
+    );
+
+  } else if (id(current_page) == 1) {
+
+    // ==========================================================
+    // INSTRUCTION PAGE
+    // ==========================================================
+
+    it.printf(
+      MARGIN,
+      295,
+      id(font_heading),
+      BLACK,
+      TextAlign::TOP_LEFT,
+      "Step %d of %d",
+      step,
+      step_count
+    );
+
+    if (!servings.empty()) {
+      it.printf(
+        SCREEN_WIDTH - MARGIN,
+        310,
+        id(font_meta),
+        DARK_GRAY,
+        TextAlign::TOP_RIGHT,
+        "%s servings",
+        servings.c_str()
+      );
+    }
 
     draw_wrapped(
       instruction,
       MARGIN,
-      520,
+      420,
       SCREEN_WIDTH - (MARGIN * 2),
       62,
       id(font_body),
@@ -879,19 +899,17 @@
 
     it.print(
       MARGIN,
-      420,
+      295,
       id(font_heading),
       BLACK,
       TextAlign::TOP_LEFT,
       "Ingredients"
     );
 
-
     if (!servings.empty()) {
-
       it.printf(
         SCREEN_WIDTH - MARGIN,
-        435,
+        310,
         id(font_meta),
         DARK_GRAY,
         TextAlign::TOP_RIGHT,
@@ -900,11 +918,10 @@
       );
     }
 
-
     draw_wrapped(
       ingredients,
       MARGIN,
-      520,
+      420,
       SCREEN_WIDTH - (MARGIN * 2),
       58,
       id(font_body),
@@ -912,7 +929,6 @@
       NAV_TOP - 80
     );
   }
-
 
   // ============================================================
   // BOTTOM NAVIGATION
@@ -972,6 +988,36 @@
   // ============================================================
 
   if (id(current_page) == 0) {
+
+    // The overview opens the cooking instructions from the centre button.
+    it.print(
+      300,
+      1315,
+      id(font_button),
+      MID_GRAY,
+      TextAlign::CENTER,
+      "< Previous"
+    );
+
+    it.print(
+      936,
+      1315,
+      id(font_button),
+      BLACK,
+      TextAlign::CENTER,
+      "Start Cooking"
+    );
+
+    it.print(
+      1572,
+      1315,
+      id(font_button),
+      MID_GRAY,
+      TextAlign::CENTER,
+      "Next >"
+    );
+
+  } else if (id(current_page) == 1) {
 
     // ----------------------------------------------------------
     // PREVIOUS
