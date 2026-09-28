@@ -884,6 +884,38 @@
       );
     }
 
+    // ----------------------------------------------------------
+    // STEP PROGRESS
+    // ----------------------------------------------------------
+
+    const int progress_x = MARGIN;
+    const int progress_y = 372;
+    const int progress_width = SCREEN_WIDTH - (MARGIN * 2);
+    const int progress_height = 18;
+    int progress_step = step;
+
+    if (progress_step < 0)
+      progress_step = 0;
+    if (progress_step > step_count)
+      progress_step = step_count;
+
+    const int progress_fill =
+      ((progress_width - 4) * progress_step) / step_count;
+
+    it.filled_rectangle(
+      progress_x, progress_y, progress_width, progress_height, PALE_GRAY
+    );
+    it.rectangle(
+      progress_x, progress_y, progress_width, progress_height, DARK_GRAY
+    );
+    it.filled_rectangle(
+      progress_x + 2,
+      progress_y + 2,
+      progress_fill,
+      progress_height - 4,
+      BLACK
+    );
+
     draw_wrapped(
       instruction,
       MARGIN,
