@@ -1,0 +1,25 @@
+alias: Clear Kitchen Recipe
+description: Clear the active recipe and return the kitchen display to clock and weather.
+sequence:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.kitchen_recipe_active
+
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.kitchen_recipe_slug
+    data:
+      value: ''
+
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.kitchen_recipe_step
+    data:
+      value: 1
+
+  - variables:
+      result:
+        success: true
+
+  - stop: Kitchen recipe cleared
+    response_variable: result

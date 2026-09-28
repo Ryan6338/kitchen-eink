@@ -684,7 +684,7 @@ binary_sensor:
               lambda: |-
                 return id(current_page) == 0;
             then:
-              - script.execute: show_instructions
+              - script.execute: show_ingredients
             else:
               - if:
                   condition:

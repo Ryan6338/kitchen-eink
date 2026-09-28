@@ -989,7 +989,7 @@
 
   if (id(current_page) == 0) {
 
-    // The overview opens the cooking instructions from the centre button.
+    // Start with ingredients, then use the centre button to toggle instructions.
     it.print(
       300,
       1315,
