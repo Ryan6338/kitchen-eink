@@ -622,6 +622,18 @@ script:
       - script.execute: refresh_display
 
 
+  - id: show_overview
+    then:
+      - lambda: |-
+          id(current_page) = 0;
+      - homeassistant.action:
+          action: input_select.select_option
+          data:
+            entity_id: input_select.kitchen_recipe_page
+            option: overview
+      - script.execute: refresh_display
+
+
   - id: show_instructions
     then:
       - lambda: |-
@@ -687,10 +699,17 @@ binary_sensor:
               lambda: |-
                 return id(current_page) == 1;
             then:
-              - homeassistant.action:
-                  action: input_number.decrement
-                  data:
-                    entity_id: input_number.kitchen_recipe_step
+              - if:
+                  condition:
+                    lambda: |-
+                      return id(recipe_step).has_state() && id(recipe_step).state > 1;
+                  then:
+                    - homeassistant.action:
+                        action: input_number.decrement
+                        data:
+                          entity_id: input_number.kitchen_recipe_step
+                  else:
+                    - script.execute: show_overview
 
 
   - platform: touchscreen

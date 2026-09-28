@@ -1040,9 +1040,9 @@
         300,
         1315,
         id(font_button),
-        MID_GRAY,
+        BLACK,
         TextAlign::CENTER,
-        "< Previous"
+        "< Overview"
       );
     }
 
