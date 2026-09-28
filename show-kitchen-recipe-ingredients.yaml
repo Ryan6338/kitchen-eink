@@ -1,0 +1,16 @@
+alias: Show Kitchen Recipe Ingredients
+description: Show the loaded recipe's ingredients on the kitchen display.
+sequence:
+  - action: input_select.select_option
+    target:
+      entity_id: input_select.kitchen_recipe_page
+    data:
+      option: ingredients
+
+  - variables:
+      result:
+        success: true
+        page: ingredients
+
+  - stop: Kitchen recipe ingredients displayed
+    response_variable: result

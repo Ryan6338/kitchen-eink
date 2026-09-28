@@ -336,6 +336,21 @@ text_sensor:
       then:
         - script.execute: refresh_display
 
+  - platform: homeassistant
+    id: recipe_page
+    entity_id: input_select.kitchen_recipe_page
+    on_value:
+      then:
+        - lambda: |-
+            if (x == "overview") {
+              id(current_page) = 0;
+            } else if (x == "instructions") {
+              id(current_page) = 1;
+            } else if (x == "ingredients") {
+              id(current_page) = 2;
+            }
+        - script.execute: refresh_display
+
 time:
   - platform: homeassistant
     id: ha_time
@@ -599,6 +614,11 @@ script:
     then:
       - lambda: |-
           id(current_page) = 2;
+      - homeassistant.action:
+          action: input_select.select_option
+          data:
+            entity_id: input_select.kitchen_recipe_page
+            option: ingredients
       - script.execute: refresh_display
 
 
@@ -606,6 +626,11 @@ script:
     then:
       - lambda: |-
           id(current_page) = 1;
+      - homeassistant.action:
+          action: input_select.select_option
+          data:
+            entity_id: input_select.kitchen_recipe_page
+            option: instructions
       - script.execute: refresh_display
 
 

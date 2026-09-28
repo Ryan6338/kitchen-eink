@@ -1,0 +1,41 @@
+alias: Go To Kitchen Recipe Step
+description: Show a specific numbered recipe instruction on the kitchen display.
+fields:
+  step_number:
+    name: Step number
+    description: The recipe instruction number to display.
+    required: true
+    selector:
+      number:
+        min: 1
+        max: 100
+        step: 1
+        mode: box
+sequence:
+  - variables:
+      requested_step: "{{ step_number | int(1) }}"
+      final_step: >-
+        {{ [state_attr('sensor.kitchen_recipe_display', 'step_count') | int(1), 1] | max }}
+      target_step: "{{ [[requested_step, 1] | max, final_step] | min }}"
+
+  - action: input_select.select_option
+    target:
+      entity_id: input_select.kitchen_recipe_page
+    data:
+      option: instructions
+
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.kitchen_recipe_step
+    data:
+      value: "{{ target_step }}"
+
+  - variables:
+      result:
+        success: true
+        requested_step: "{{ requested_step }}"
+        step: "{{ target_step }}"
+        step_count: "{{ final_step }}"
+
+  - stop: Requested kitchen recipe step displayed
+    response_variable: result

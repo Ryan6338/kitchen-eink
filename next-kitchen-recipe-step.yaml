@@ -1,0 +1,29 @@
+alias: Next Kitchen Recipe Step
+description: Move the kitchen display to the next recipe instruction.
+sequence:
+  - variables:
+      current_step: "{{ states('input_number.kitchen_recipe_step') | int(1) }}"
+      final_step: >-
+        {{ [state_attr('sensor.kitchen_recipe_display', 'step_count') | int(1), 1] | max }}
+      target_step: "{{ [current_step + 1, final_step] | min }}"
+
+  - action: input_select.select_option
+    target:
+      entity_id: input_select.kitchen_recipe_page
+    data:
+      option: instructions
+
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.kitchen_recipe_step
+    data:
+      value: "{{ target_step }}"
+
+  - variables:
+      result:
+        success: true
+        step: "{{ target_step }}"
+        step_count: "{{ final_step }}"
+
+  - stop: Kitchen recipe advanced
+    response_variable: result

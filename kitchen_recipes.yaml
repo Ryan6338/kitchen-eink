@@ -13,6 +13,16 @@ input_number:
     mode: box
 
 
+input_select:
+  kitchen_recipe_page:
+    name: Kitchen Recipe Page
+    options:
+      - overview
+      - instructions
+      - ingredients
+    initial: overview
+
+
 template:
 
   # ---------------------------------------------------------------

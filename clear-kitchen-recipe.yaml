@@ -17,6 +17,12 @@ sequence:
     data:
       value: 1
 
+  - action: input_select.select_option
+    target:
+      entity_id: input_select.kitchen_recipe_page
+    data:
+      option: overview
+
   - variables:
       result:
         success: true
