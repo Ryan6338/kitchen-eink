@@ -1,0 +1,387 @@
+# ===================================================================
+# KITCHEN RECIPE DISPLAY
+# Shared between the PC simulator and the eventual E1003.
+# ===================================================================
+
+
+# -------------------------------------------------------------------
+# DEFAULT SUBSTITUTIONS
+# -------------------------------------------------------------------
+#
+# Hardware configs can override these.
+#
+# Simulator:
+#   display_refresh_delay: 3s
+#
+# E1003:
+#   display_refresh_delay: 0s
+#
+# -------------------------------------------------------------------
+
+substitutions:
+  display_refresh_delay: 0s
+
+
+# -------------------------------------------------------------------
+# INITIAL DISPLAY REFRESH
+# -------------------------------------------------------------------
+
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - script.execute: refresh_display
+
+
+# -------------------------------------------------------------------
+# FONTS
+# -------------------------------------------------------------------
+#
+# 4 BPP gives us 16 levels of font anti-aliasing, which is useful
+# when approximating a 16-level grayscale e-paper display.
+#
+# -------------------------------------------------------------------
+
+font:
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 300
+    id: font_clock
+    size: 220
+    bpp: 4
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 400
+    id: font_date
+    size: 52
+    bpp: 4
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 500
+    id: font_weather_temp
+    size: 110
+    bpp: 4
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 400
+    id: font_weather_condition
+    size: 48
+    bpp: 4
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 400
+    id: font_body
+    size: 42
+    bpp: 4
+
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 400
+    id: font_meta
+    size: 32
+    bpp: 4
+
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 500
+    id: font_heading
+    size: 54
+    bpp: 4
+
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 700
+    id: font_title
+    size: 72
+    bpp: 4
+
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 500
+    id: font_button
+    size: 38
+    bpp: 4
+
+
+# -------------------------------------------------------------------
+# LOCAL UI STATE
+# -------------------------------------------------------------------
+
+globals:
+  - id: current_page
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+# current_page:
+#
+#   0 = Cooking instructions
+#   1 = Ingredients
+
+
+# -------------------------------------------------------------------
+# HOME ASSISTANT RECIPE DATA
+# -------------------------------------------------------------------
+#
+# These entities do not have to exist for the simulator to compile.
+# Until they exist, the display will show fallback/sample content.
+#
+# Create these later in Home Assistant:
+#
+# input_text.kitchen_recipe_title
+# input_text.kitchen_recipe_instruction
+# input_text.kitchen_recipe_ingredients
+# input_text.kitchen_recipe_servings
+#
+# input_number.kitchen_recipe_step
+# input_number.kitchen_recipe_step_count
+#
+# We'll eventually replace some of these with data from Mealie.
+#
+# -------------------------------------------------------------------
+
+text_sensor:
+
+  - platform: homeassistant
+    id: weather_condition
+    entity_id: weather.forecast_home
+
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: |-
+                return !id(recipe_active).state;
+            then:
+              - script.execute: refresh_display
+
+  - platform: homeassistant
+    id: recipe_title
+    entity_id: sensor.kitchen_recipe_display
+    attribute: title
+    on_value:
+      then:
+        - script.execute: refresh_display
+
+  - platform: homeassistant
+    id: recipe_instruction
+    entity_id: sensor.kitchen_recipe_display
+    attribute: instruction
+    on_value:
+      then:
+        - script.execute: refresh_display
+
+  - platform: homeassistant
+    id: recipe_ingredients
+    entity_id: sensor.kitchen_recipe_display
+    attribute: ingredients
+    on_value:
+      then:
+        - script.execute: refresh_display
+
+  - platform: homeassistant
+    id: recipe_servings
+    entity_id: sensor.kitchen_recipe_display
+    attribute: servings
+    on_value:
+      then:
+        - script.execute: refresh_display
+
+time:
+  - platform: homeassistant
+    id: ha_time
+
+    on_time:
+      - seconds: 0
+        minutes: '*'
+        then:
+          - if:
+              condition:
+                lambda: |-
+                  return !id(recipe_active).state;
+              then:
+                - script.execute: refresh_display
+
+sensor:
+
+  - platform: homeassistant
+    id: weather_temperature
+    entity_id: weather.forecast_home
+    attribute: temperature
+
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: |-
+                return !id(recipe_active).state;
+            then:
+              - script.execute: refresh_display
+
+  - platform: homeassistant
+    id: recipe_step
+    entity_id: input_number.kitchen_recipe_step
+    on_value:
+      then:
+        - script.execute: refresh_display
+
+  - platform: homeassistant
+    id: recipe_step_count
+    entity_id: sensor.kitchen_recipe_display
+    attribute: step_count
+    on_value:
+      then:
+        - script.execute: refresh_display
+
+
+# -------------------------------------------------------------------
+# DISPLAY REFRESH
+# -------------------------------------------------------------------
+#
+# Everything should use this rather than:
+#
+#   component.update: main_display
+#
+# That lets the simulator artificially delay the update while the
+# real display can set display_refresh_delay to 0s.
+#
+# mode: restart is intentional.
+#
+# If HA sends title, step, instruction, servings etc. one after
+# another, the timer restarts and we only perform one e-paper refresh
+# once all the new data has arrived.
+#
+# -------------------------------------------------------------------
+
+script:
+
+  - id: refresh_display
+    mode: restart
+    then:
+      - delay: ${display_refresh_delay}
+      - component.update: main_display
+
+
+  - id: show_ingredients
+    then:
+      - lambda: |-
+          id(current_page) = 1;
+      - script.execute: refresh_display
+
+
+  - id: show_instructions
+    then:
+      - lambda: |-
+          id(current_page) = 0;
+      - script.execute: refresh_display
+
+
+# -------------------------------------------------------------------
+# TOUCH BUTTONS
+# -------------------------------------------------------------------
+#
+# Screen dimensions:
+#
+#     1404 x 1872
+#
+# Bottom navigation starts at:
+#
+#     Y = 1700
+#
+# ---------------------------------------------------------------
+# |       Previous      |   Ingredients   |        Next         |
+# |      0 - 450        |    450 - 950    |     950 - 1404      |
+# ---------------------------------------------------------------
+#
+# -------------------------------------------------------------------
+
+binary_sensor:
+
+  - platform: homeassistant
+    id: recipe_active
+    entity_id: input_boolean.kitchen_recipe_active
+
+    on_press:
+      then:
+        - lambda: |-
+            id(current_page) = 0;
+        - script.execute: refresh_display
+
+    on_release:
+      then:
+        - lambda: |-
+            id(current_page) = 0;
+        - script.execute: refresh_display
+
+  - platform: touchscreen
+    id: touch_previous
+    touchscreen_id: main_touchscreen
+
+    x_min: 0
+    x_max: 599
+    y_min: 1230
+    y_max: 1403
+
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: |-
+                return id(current_page) == 0;
+            then:
+              - homeassistant.action:
+                  action: input_number.decrement
+                  data:
+                    entity_id: input_number.kitchen_recipe_step
+
+
+  - platform: touchscreen
+    id: touch_middle
+    touchscreen_id: main_touchscreen
+
+    x_min: 600
+    x_max: 1271
+    y_min: 1230
+    y_max: 1403
+
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: |-
+                return id(current_page) == 0;
+            then:
+              - script.execute: show_ingredients
+            else:
+              - script.execute: show_instructions
+
+
+  - platform: touchscreen
+    id: touch_next
+    touchscreen_id: main_touchscreen
+
+    x_min: 1272
+    x_max: 1871
+    y_min: 1230
+    y_max: 1403
+
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: |-
+                return id(current_page) == 0;
+            then:
+              - homeassistant.action:
+                  action: input_number.increment
+                  data:
+                    entity_id: input_number.kitchen_recipe_step

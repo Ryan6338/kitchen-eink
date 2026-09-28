@@ -1,0 +1,769 @@
+|-
+  // ============================================================
+  // COLOURS
+  // ============================================================
+
+  const Color BLACK      = Color(0,   0,   0);
+  const Color DARK_GRAY  = Color(68,  68,  68);
+  const Color MID_GRAY   = Color(136, 136, 136);
+  const Color LIGHT_GRAY = Color(221, 221, 221);
+  const Color PALE_GRAY  = Color(238, 238, 238);
+  const Color WHITE      = Color(255, 255, 255);
+
+
+  // ============================================================
+  // BASIC DISPLAY CONSTANTS
+  // ============================================================
+
+  const int SCREEN_WIDTH  = it.get_width();
+  const int SCREEN_HEIGHT = it.get_height();
+
+  const int MARGIN = 70;
+  const int NAV_TOP = 1230;
+
+
+  // ============================================================
+  // WORD WRAPPING FUNCTION
+  // ============================================================
+
+  auto draw_wrapped =
+    [&](const std::string &text,
+        int x,
+        int y,
+        int max_width,
+        int line_height,
+        auto *font,
+        Color color,
+        int max_y) -> int {
+
+      std::string line;
+      std::string word;
+
+      auto draw_line = [&]() {
+
+        if (!line.empty() && y + line_height <= max_y) {
+
+          it.print(
+            x,
+            y,
+            font,
+            color,
+            TextAlign::TOP_LEFT,
+            line.c_str()
+          );
+
+          y += line_height;
+        }
+
+        line.clear();
+      };
+
+
+      auto add_word = [&](const std::string &new_word) {
+
+        if (new_word.empty())
+          return;
+
+        std::string candidate;
+
+        if (line.empty())
+          candidate = new_word;
+        else
+          candidate = line + " " + new_word;
+
+
+        int x1;
+        int y1;
+        int width;
+        int height;
+
+        it.get_text_bounds(
+          0,
+          0,
+          candidate.c_str(),
+          font,
+          TextAlign::TOP_LEFT,
+          &x1,
+          &y1,
+          &width,
+          &height
+        );
+
+
+        if (width > max_width && !line.empty()) {
+
+          draw_line();
+          line = new_word;
+
+        } else {
+
+          line = candidate;
+        }
+      };
+
+
+      for (size_t i = 0; i < text.length(); i++) {
+
+        char c = text[i];
+
+        if (c == '\n') {
+
+          add_word(word);
+          word.clear();
+
+          draw_line();
+
+        } else if (c == ' ' || c == '\t') {
+
+          add_word(word);
+          word.clear();
+
+        } else {
+
+          word += c;
+        }
+      }
+
+
+      add_word(word);
+
+      if (!line.empty())
+        draw_line();
+
+      return y;
+    };
+
+
+  // ============================================================
+  // BACKGROUND
+  // ============================================================
+
+  it.fill(WHITE);
+
+
+  // ============================================================
+  // IDLE DISPLAY
+  // ============================================================
+  //
+  // If there is no active recipe, display time/date/weather and
+  // exit before drawing any recipe UI.
+  //
+  // ============================================================
+
+  if (!id(recipe_active).state) {
+
+    auto now = id(ha_time).now();
+
+
+    // ----------------------------------------------------------
+    // TIME
+    // ----------------------------------------------------------
+
+    if (now.is_valid()) {
+
+      char time_buffer[16];
+
+      snprintf(
+        time_buffer,
+        sizeof(time_buffer),
+        "%02d:%02d",
+        now.hour,
+        now.minute
+      );
+
+      it.print(
+        SCREEN_WIDTH / 2,
+        300,
+        id(font_clock),
+        BLACK,
+        TextAlign::CENTER,
+        time_buffer
+      );
+
+
+      // --------------------------------------------------------
+      // DATE
+      // --------------------------------------------------------
+
+      static const char *days[] = {
+        "",
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      };
+
+      static const char *months[] = {
+        "",
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      };
+
+
+      char date_buffer[80];
+
+      snprintf(
+        date_buffer,
+        sizeof(date_buffer),
+        "%s, %d %s",
+        days[now.day_of_week],
+        now.day_of_month,
+        months[now.month]
+      );
+
+      it.print(
+        SCREEN_WIDTH / 2,
+        500,
+        id(font_date),
+        DARK_GRAY,
+        TextAlign::CENTER,
+        date_buffer
+      );
+
+    } else {
+
+      it.print(
+        SCREEN_WIDTH / 2,
+        300,
+        id(font_clock),
+        BLACK,
+        TextAlign::CENTER,
+        "--:--"
+      );
+    }
+
+
+    // ----------------------------------------------------------
+    // SEPARATOR
+    // ----------------------------------------------------------
+
+    it.filled_rectangle(
+      300,
+      640,
+      SCREEN_WIDTH - 600,
+      3,
+      LIGHT_GRAY
+    );
+
+
+    // ----------------------------------------------------------
+    // WEATHER TEMPERATURE
+    // ----------------------------------------------------------
+
+    if (id(weather_temperature).has_state()) {
+
+      it.printf(
+        SCREEN_WIDTH / 2,
+        795,
+        id(font_weather_temp),
+        BLACK,
+        TextAlign::CENTER,
+        "%.0f°C",
+        id(weather_temperature).state
+      );
+
+    } else {
+
+      it.print(
+        SCREEN_WIDTH / 2,
+        795,
+        id(font_weather_temp),
+        MID_GRAY,
+        TextAlign::CENTER,
+        "--°C"
+      );
+    }
+
+
+    // ----------------------------------------------------------
+    // WEATHER CONDITION
+    // ----------------------------------------------------------
+
+    std::string condition = id(weather_condition).state;
+
+
+    if (
+      condition.empty() ||
+      condition == "unknown" ||
+      condition == "unavailable"
+    ) {
+
+      condition = "Weather unavailable";
+
+    } else if (condition == "partlycloudy") {
+
+      condition = "Partly cloudy";
+
+    } else if (condition == "cloudy") {
+
+      condition = "Cloudy";
+
+    } else if (condition == "sunny") {
+
+      condition = "Sunny";
+
+    } else if (condition == "rainy") {
+
+      condition = "Rain";
+
+    } else if (condition == "pouring") {
+
+      condition = "Heavy rain";
+
+    } else if (condition == "lightning") {
+
+      condition = "Thunderstorms";
+
+    } else if (condition == "lightning-rainy") {
+
+      condition = "Thunderstorms";
+
+    } else if (condition == "windy") {
+
+      condition = "Windy";
+
+    } else if (condition == "windy-variant") {
+
+      condition = "Windy";
+
+    } else if (condition == "fog") {
+
+      condition = "Fog";
+
+    } else if (condition == "hail") {
+
+      condition = "Hail";
+
+    } else if (condition == "snowy") {
+
+      condition = "Snow";
+
+    } else if (condition == "snowy-rainy") {
+
+      condition = "Sleet";
+
+    } else if (condition == "clear-night") {
+
+      condition = "Clear";
+
+    } else if (condition == "exceptional") {
+
+      condition = "Exceptional weather";
+    }
+
+
+    it.print(
+      SCREEN_WIDTH / 2,
+      940,
+      id(font_weather_condition),
+      DARK_GRAY,
+      TextAlign::CENTER,
+      condition.c_str()
+    );
+
+
+    // ----------------------------------------------------------
+    // IDLE FOOTER
+    // ----------------------------------------------------------
+
+    it.print(
+      SCREEN_WIDTH / 2,
+      1180,
+      id(font_meta),
+      MID_GRAY,
+      TextAlign::CENTER,
+      "Kitchen"
+    );
+
+
+    // Do not draw any recipe UI.
+    return;
+  }
+
+
+  // ============================================================
+  // GET RECIPE DATA FROM HOME ASSISTANT
+  // ============================================================
+
+  std::string title = id(recipe_title).state;
+
+  if (
+    title.empty() ||
+    title == "unknown" ||
+    title == "unavailable"
+  ) {
+    title = "Kitchen Recipe Display";
+  }
+
+
+  std::string servings = id(recipe_servings).state;
+
+  if (
+    servings.empty() ||
+    servings == "unknown" ||
+    servings == "unavailable"
+  ) {
+    servings = "";
+  }
+
+
+  std::string instruction = id(recipe_instruction).state;
+
+  if (
+    instruction.empty() ||
+    instruction == "unknown" ||
+    instruction == "unavailable"
+  ) {
+
+    instruction = "Waiting for recipe instructions...";
+  }
+
+
+  std::string ingredients = id(recipe_ingredients).state;
+
+  if (
+    ingredients.empty() ||
+    ingredients == "unknown" ||
+    ingredients == "unavailable"
+  ) {
+
+    ingredients = "Waiting for recipe ingredients...";
+  }
+
+
+  int step = 1;
+
+  if (id(recipe_step).has_state()) {
+
+    step = (int) id(recipe_step).state;
+
+    if (step < 1)
+      step = 1;
+  }
+
+
+  int step_count = 1;
+
+  if (id(recipe_step_count).has_state()) {
+
+    step_count = (int) id(recipe_step_count).state;
+
+    if (step_count < 1)
+      step_count = 1;
+  }
+
+
+  // ============================================================
+  // RECIPE TITLE
+  // ============================================================
+
+  int title_y = 55;
+
+  title_y = draw_wrapped(
+    title,
+    MARGIN,
+    title_y,
+    SCREEN_WIDTH - (MARGIN * 2),
+    82,
+    id(font_title),
+    BLACK,
+    225
+  );
+
+
+  // ============================================================
+  // HEADER SEPARATOR
+  // ============================================================
+
+  const int separator_y = 245;
+
+  it.filled_rectangle(
+    MARGIN,
+    separator_y,
+    SCREEN_WIDTH - (MARGIN * 2),
+    3,
+    DARK_GRAY
+  );
+
+
+  // ============================================================
+  // PAGE CONTENT
+  // ============================================================
+
+  if (id(current_page) == 0) {
+
+    // ==========================================================
+    // INSTRUCTION PAGE
+    // ==========================================================
+
+
+    // ----------------------------------------------------------
+    // STEP INDICATOR
+    // ----------------------------------------------------------
+
+    it.printf(
+      MARGIN,
+      295,
+      id(font_heading),
+      BLACK,
+      TextAlign::TOP_LEFT,
+      "Step %d of %d",
+      step,
+      step_count
+    );
+
+
+    // ----------------------------------------------------------
+    // SERVINGS
+    // ----------------------------------------------------------
+
+    if (!servings.empty()) {
+
+      it.printf(
+        SCREEN_WIDTH - MARGIN,
+        310,
+        id(font_meta),
+        DARK_GRAY,
+        TextAlign::TOP_RIGHT,
+        "%s servings",
+        servings.c_str()
+      );
+    }
+
+
+    // ----------------------------------------------------------
+    // INSTRUCTION
+    // ----------------------------------------------------------
+
+    draw_wrapped(
+      instruction,
+      MARGIN,
+      420,
+      SCREEN_WIDTH - (MARGIN * 2),
+      62,
+      id(font_body),
+      BLACK,
+      NAV_TOP - 80
+    );
+
+  } else {
+
+    // ==========================================================
+    // INGREDIENT PAGE
+    // ==========================================================
+
+    it.print(
+      MARGIN,
+      295,
+      id(font_heading),
+      BLACK,
+      TextAlign::TOP_LEFT,
+      "Ingredients"
+    );
+
+
+    if (!servings.empty()) {
+
+      it.printf(
+        SCREEN_WIDTH - MARGIN,
+        310,
+        id(font_meta),
+        DARK_GRAY,
+        TextAlign::TOP_RIGHT,
+        "%s servings",
+        servings.c_str()
+      );
+    }
+
+
+    draw_wrapped(
+      ingredients,
+      MARGIN,
+      420,
+      SCREEN_WIDTH - (MARGIN * 2),
+      58,
+      id(font_body),
+      BLACK,
+      NAV_TOP - 80
+    );
+  }
+
+
+  // ============================================================
+  // BOTTOM NAVIGATION
+  // ============================================================
+
+
+  // ------------------------------------------------------------
+  // BACKGROUND
+  // ------------------------------------------------------------
+
+  it.filled_rectangle(
+    0,
+    NAV_TOP,
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT - NAV_TOP,
+    PALE_GRAY
+  );
+
+
+  // ------------------------------------------------------------
+  // TOP BORDER
+  // ------------------------------------------------------------
+
+  it.filled_rectangle(
+    0,
+    NAV_TOP,
+    SCREEN_WIDTH,
+    3,
+    DARK_GRAY
+  );
+
+
+  // ------------------------------------------------------------
+  // VERTICAL SEPARATORS
+  // ------------------------------------------------------------
+
+  it.filled_rectangle(
+    600,
+    NAV_TOP,
+    2,
+    SCREEN_HEIGHT - NAV_TOP,
+    MID_GRAY
+  );
+
+
+  it.filled_rectangle(
+    1272,
+    NAV_TOP,
+    2,
+    SCREEN_HEIGHT - NAV_TOP,
+    MID_GRAY
+  );
+
+
+  // ============================================================
+  // NAVIGATION LABELS
+  // ============================================================
+
+  if (id(current_page) == 0) {
+
+    // ----------------------------------------------------------
+    // PREVIOUS
+    // ----------------------------------------------------------
+
+    if (step > 1) {
+
+      it.print(
+        300,
+        1315,
+        id(font_button),
+        BLACK,
+        TextAlign::CENTER,
+        "< Previous"
+      );
+
+    } else {
+
+      it.print(
+        300,
+        1315,
+        id(font_button),
+        MID_GRAY,
+        TextAlign::CENTER,
+        "< Previous"
+      );
+    }
+
+
+    // ----------------------------------------------------------
+    // INGREDIENTS
+    // ----------------------------------------------------------
+
+    it.print(
+      936,
+      1315,
+      id(font_button),
+      BLACK,
+      TextAlign::CENTER,
+      "Ingredients"
+    );
+
+
+    // ----------------------------------------------------------
+    // NEXT
+    // ----------------------------------------------------------
+
+    if (step < step_count) {
+
+      it.print(
+        1572,
+        1315,
+        id(font_button),
+        BLACK,
+        TextAlign::CENTER,
+        "Next >"
+      );
+
+    } else {
+
+      it.print(
+        1572,
+        1315,
+        id(font_button),
+        MID_GRAY,
+        TextAlign::CENTER,
+        "Next >"
+      );
+    }
+
+  } else {
+
+    // ==========================================================
+    // INGREDIENTS PAGE
+    // ==========================================================
+
+    // Previous / Next aren't used on the ingredients page.
+
+    it.print(
+      300,
+      1315,
+      id(font_button),
+      MID_GRAY,
+      TextAlign::CENTER,
+      "< Previous"
+    );
+
+
+    it.print(
+      936,
+      1315,
+      id(font_button),
+      BLACK,
+      TextAlign::CENTER,
+      "Instructions"
+    );
+
+
+    it.print(
+      1572,
+      1315,
+      id(font_button),
+      MID_GRAY,
+      TextAlign::CENTER,
+      "Next >"
+    );
+  }

@@ -1,0 +1,43 @@
+substitutions:
+  display_refresh_delay: 3s
+
+esphome:
+  name: kitchen-display-simulator
+  friendly_name: Kitchen Display Simulator
+
+host:
+  mac_address: "02:4B:49:54:43:48"
+
+logger:
+
+api:
+
+packages:
+  common: !include kitchen-common.yaml
+
+
+# ---------------------------------------------------------------
+# DISPLAY
+# ---------------------------------------------------------------
+
+display:
+  - platform: sdl
+    id: main_display
+
+    dimensions:
+      width: 1872
+      height: 1404
+
+    update_interval: never
+
+    lambda: !include kitchen-render.yaml
+
+
+# ---------------------------------------------------------------
+# TOUCHSCREEN
+# ---------------------------------------------------------------
+
+touchscreen:
+  - platform: sdl
+    id: main_touchscreen
+    display: main_display
