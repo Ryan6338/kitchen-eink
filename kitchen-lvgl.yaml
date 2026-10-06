@@ -1,0 +1,2324 @@
+lvgl:
+
+  id: kitchen_ui
+
+  displays: main_display
+
+  touchscreens: main_touchscreen
+
+  buffer_size: 25%
+
+  # Disable scrolling on the LVGL root canvas as well as individual pages.
+  # The full-width navigation bars otherwise make LVGL create a horizontal
+  # scrollbar because their labels fill the footer edge-to-edge.
+  scrollbar_mode: "OFF"
+
+  scrollable: false
+
+  bottom_layer:
+    bg_image_src: kitchen_background
+    bg_image_opa: COVER
+
+  pages:
+
+    - id: clock_page
+
+      scrollbar_mode: "OFF"
+
+      scrollable: false
+
+      bg_opa: TRANSP
+
+      widgets:
+
+        - obj:
+
+            x: 36
+
+            y: 40
+
+            width: 460
+
+            height: 520
+
+            radius: 20
+
+            pad_all: 0
+
+            bg_color: 0x222222
+
+            bg_opa: 80%
+
+            border_width: 1
+
+            border_color: 0x444444
+
+            border_opa: 70%
+
+            shadow_color: 0x020812
+
+            shadow_opa: 20%
+
+            shadow_width: 24
+
+            widgets:
+
+              - label:
+
+                  id: clock_hours
+
+                  text: "--"
+
+                  text_font: font_clock
+
+                  text_color: 0xCCCCCC
+
+                  align: CENTER
+
+        - obj:
+
+            x: 528
+
+            y: 40
+
+            width: 460
+
+            height: 520
+
+            radius: 20
+
+            pad_all: 0
+
+            bg_color: 0x222222
+
+            bg_opa: 80%
+
+            border_width: 1
+
+            border_color: 0x444444
+
+            border_opa: 70%
+
+            shadow_color: 0x020812
+
+            shadow_opa: 20%
+
+            shadow_width: 24
+
+            widgets:
+
+              - label:
+
+                  id: clock_minutes
+
+                  text: "--"
+
+                  text_font: font_clock
+
+                  text_color: 0xCCCCCC
+
+                  align: CENTER
+
+    - id: overview_page
+
+      scrollbar_mode: "OFF"
+
+      scrollable: false
+
+      bg_opa: TRANSP
+
+      widgets:
+
+        - label:
+
+            id: overview_title
+
+            x: 24
+
+            y: 18
+
+            width: 976
+
+            text: "Kitchen Recipe Display"
+
+            text_font: font_title
+
+            text_color: 0xCCCCCC
+
+        - label:
+
+            x: 24
+
+            y: 112
+
+            text: "Overview"
+
+            text_font: font_heading
+
+            text_color: 0xCCCCCC
+
+        - label:
+
+            id: overview_servings
+
+            x: 800
+
+            y: 118
+
+            width: 200
+
+            text_align: RIGHT
+
+            text_font: font_meta
+
+            text_color: 0x999999
+
+            text: ""
+
+        - obj:
+
+            x: 24
+
+            y: 158
+
+            width: 976
+
+            height: 120
+
+            radius: 18
+
+            pad_all: 0
+
+            bg_color: 0x222222
+
+            bg_opa: 80%
+
+            border_width: 1
+
+            border_color: 0x444444
+
+            border_opa: 70%
+
+            shadow_color: 0x020812
+
+            shadow_opa: 20%
+
+            shadow_width: 24
+
+            widgets:
+
+              - label:
+
+                  x: 116
+
+                  y: 22
+
+                  text: "TOTAL"
+
+                  text_font: font_time_label
+
+                  text_color: 0x777777
+
+              - label:
+
+                  id: overview_total
+
+                  x: 100
+
+                  y: 52
+
+                  width: 160
+
+                  text_align: CENTER
+
+                  text: "--"
+
+                  text_font: font_time_value
+
+                  text_color: 0xCCCCCC
+
+              - label:
+
+                  x: 447
+
+                  y: 22
+
+                  text: "PREP"
+
+                  text_font: font_time_label
+
+                  text_color: 0x777777
+
+              - label:
+
+                  id: overview_prep
+
+                  x: 408
+
+                  y: 52
+
+                  width: 160
+
+                  text_align: CENTER
+
+                  text: "--"
+
+                  text_font: font_time_value
+
+                  text_color: 0xCCCCCC
+
+              - label:
+
+                  x: 780
+
+                  y: 22
+
+                  text: "COOK"
+
+                  text_font: font_time_label
+
+                  text_color: 0x777777
+
+              - label:
+
+                  id: overview_cook
+
+                  x: 716
+
+                  y: 52
+
+                  width: 160
+
+                  text_align: CENTER
+
+                  text: "--"
+
+                  text_font: font_time_value
+
+                  text_color: 0xCCCCCC
+
+        - label:
+
+            id: overview_steps
+
+            x: 24
+
+            y: 310
+
+            width: 976
+
+            text_align: CENTER
+
+            text: "1 step"
+
+            text_font: font_meta
+
+            text_color: 0x999999
+
+        - obj:
+
+            x: 0
+
+            y: 538
+
+            width: 1024
+
+            height: 62
+
+            radius: 0
+
+            pad_all: 0
+
+            scrollbar_mode: "OFF"
+
+            scrollable: false
+
+            bg_color: 0x222222
+
+            bg_opa: 80%
+
+            border_width: 1
+
+            border_color: 0x444444
+
+            border_opa: 70%
+
+            shadow_color: 0x020812
+
+            shadow_opa: 20%
+
+            shadow_width: 24
+
+            widgets:
+
+              - label:
+
+                  x: 0
+
+                  y: 21
+
+                  width: 328
+
+                  text_align: CENTER
+
+                  text: "< Previous"
+
+                  text_font: font_button
+
+                  text_color: 0x777777
+
+              - label:
+
+                  x: 328
+
+                  y: 21
+
+                  width: 368
+
+                  text_align: CENTER
+
+                  text: "Start Cooking"
+
+                  text_font: font_button
+
+                  text_color: 0xCCCCCC
+
+              - label:
+
+                  x: 696
+
+                  y: 21
+
+                  width: 328
+
+                  text_align: CENTER
+
+                  text: "Next >"
+
+                  text_font: font_button
+
+                  text_color: 0x777777
+
+    - id: instructions_page
+
+      scrollbar_mode: "OFF"
+
+      scrollable: false
+
+      bg_opa: TRANSP
+
+      widgets:
+
+        - label:
+
+            id: instructions_title
+
+            x: 24
+
+            y: 18
+
+            width: 976
+
+            text: "Kitchen Recipe Display"
+
+            text_font: font_title
+
+            text_color: 0xCCCCCC
+
+        - label:
+
+            id: instructions_step
+
+            x: 24
+
+            y: 112
+
+            text: "Step 1 of 1"
+
+            text_font: font_heading
+
+            text_color: 0xCCCCCC
+
+        - label:
+
+            id: instructions_servings
+
+            x: 800
+
+            y: 118
+
+            width: 200
+
+            text_align: RIGHT
+
+            text: ""
+
+            text_font: font_meta
+
+            text_color: 0x999999
+
+        - bar:
+
+            id: instructions_progress
+
+            x: 24
+
+            y: 151
+
+            width: 976
+
+            height: 8
+
+            value: 0
+
+            bg_color: 0x333333
+
+            border_width: 0
+
+            indicator:
+
+              bg_color: 0xAAAAAA
+
+        - obj:
+
+            x: 24
+
+            y: 175
+
+            width: 976
+
+            height: 339
+
+            radius: 18
+
+            pad_all: 18
+
+            border_width: 0
+
+            bg_color: 0x222222
+
+            widgets:
+
+              - label:
+
+                  id: instructions_text
+
+                  width: 924
+
+                  text: "Waiting for recipe instructions..."
+
+                  text_font: font_body
+
+                  text_color: 0xCCCCCC
+
+        - obj:
+
+            x: 0
+
+            y: 538
+
+            width: 1024
+
+            height: 62
+
+            radius: 0
+
+            pad_all: 0
+
+            scrollbar_mode: "OFF"
+
+            scrollable: false
+
+            bg_color: 0x222222
+
+            bg_opa: 80%
+
+            border_width: 1
+
+            border_color: 0x444444
+
+            border_opa: 70%
+
+            shadow_color: 0x020812
+
+            shadow_opa: 20%
+
+            shadow_width: 24
+
+            widgets:
+
+              - label:
+
+                  id: instructions_previous
+
+                  x: 0
+
+                  y: 21
+
+                  width: 328
+
+                  text_align: CENTER
+
+                  text: "< Overview"
+
+                  text_font: font_button
+
+                  text_color: 0xCCCCCC
+
+              - label:
+
+                  x: 328
+
+                  y: 21
+
+                  width: 368
+
+                  text_align: CENTER
+
+                  text: "Ingredients"
+
+                  text_font: font_button
+
+                  text_color: 0xCCCCCC
+
+              - label:
+
+                  id: instructions_next
+
+                  x: 696
+
+                  y: 21
+
+                  width: 328
+
+                  text_align: CENTER
+
+                  text: "Next >"
+
+                  text_font: font_button
+
+                  text_color: 0xCCCCCC
+
+    - id: ingredients_page
+
+      scrollbar_mode: "OFF"
+
+      scrollable: false
+
+      bg_opa: TRANSP
+
+      widgets:
+
+        - label:
+
+            id: ingredients_title
+
+            x: 24
+
+            y: 18
+
+            width: 976
+
+            text: "Kitchen Recipe Display"
+
+            text_font: font_title
+
+            text_color: 0xCCCCCC
+
+        - label:
+
+            x: 24
+
+            y: 112
+
+            text: "Ingredients"
+
+            text_font: font_heading
+
+            text_color: 0xCCCCCC
+
+        - label:
+
+            id: ingredients_servings
+
+            x: 800
+
+            y: 118
+
+            width: 200
+
+            text_align: RIGHT
+
+            text: ""
+
+            text_font: font_meta
+
+            text_color: 0x999999
+
+        - obj:
+
+            id: ingredients_container
+
+            x: 24
+
+            y: 154
+
+            width: 976
+
+            height: 360
+
+            radius: 18
+
+            pad_all: 18
+
+            border_width: 0
+
+            bg_color: 0x222222
+
+            layout:
+
+                type: FLEX
+
+                flex_flow: COLUMN
+
+                flex_align_main: START
+
+                flex_align_cross: START
+
+                flex_align_track: START
+
+            widgets:
+
+            - label:
+                id: ingredient_title_0
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_0
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 0);
+                        else id(ingredient_checks) &= ~(1ULL << 0);
+
+            - label:
+                id: ingredient_title_1
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_1
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 1);
+                        else id(ingredient_checks) &= ~(1ULL << 1);
+
+            - label:
+                id: ingredient_title_2
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_2
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 2);
+                        else id(ingredient_checks) &= ~(1ULL << 2);
+
+            - label:
+                id: ingredient_title_3
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_3
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 3);
+                        else id(ingredient_checks) &= ~(1ULL << 3);
+
+            - label:
+                id: ingredient_title_4
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_4
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 4);
+                        else id(ingredient_checks) &= ~(1ULL << 4);
+
+            - label:
+                id: ingredient_title_5
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_5
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 5);
+                        else id(ingredient_checks) &= ~(1ULL << 5);
+
+            - label:
+                id: ingredient_title_6
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_6
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 6);
+                        else id(ingredient_checks) &= ~(1ULL << 6);
+
+            - label:
+                id: ingredient_title_7
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_7
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 7);
+                        else id(ingredient_checks) &= ~(1ULL << 7);
+
+            - label:
+                id: ingredient_title_8
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_8
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 8);
+                        else id(ingredient_checks) &= ~(1ULL << 8);
+
+            - label:
+                id: ingredient_title_9
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_9
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 9);
+                        else id(ingredient_checks) &= ~(1ULL << 9);
+
+            - label:
+                id: ingredient_title_10
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_10
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 10);
+                        else id(ingredient_checks) &= ~(1ULL << 10);
+
+            - label:
+                id: ingredient_title_11
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_11
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 11);
+                        else id(ingredient_checks) &= ~(1ULL << 11);
+
+            - label:
+                id: ingredient_title_12
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_12
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 12);
+                        else id(ingredient_checks) &= ~(1ULL << 12);
+
+            - label:
+                id: ingredient_title_13
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_13
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 13);
+                        else id(ingredient_checks) &= ~(1ULL << 13);
+
+            - label:
+                id: ingredient_title_14
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_14
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 14);
+                        else id(ingredient_checks) &= ~(1ULL << 14);
+
+            - label:
+                id: ingredient_title_15
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_15
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 15);
+                        else id(ingredient_checks) &= ~(1ULL << 15);
+
+            - label:
+                id: ingredient_title_16
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_16
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 16);
+                        else id(ingredient_checks) &= ~(1ULL << 16);
+
+            - label:
+                id: ingredient_title_17
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_17
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 17);
+                        else id(ingredient_checks) &= ~(1ULL << 17);
+
+            - label:
+                id: ingredient_title_18
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_18
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 18);
+                        else id(ingredient_checks) &= ~(1ULL << 18);
+
+            - label:
+                id: ingredient_title_19
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_19
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 19);
+                        else id(ingredient_checks) &= ~(1ULL << 19);
+
+            - label:
+                id: ingredient_title_20
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_20
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 20);
+                        else id(ingredient_checks) &= ~(1ULL << 20);
+
+            - label:
+                id: ingredient_title_21
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_21
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 21);
+                        else id(ingredient_checks) &= ~(1ULL << 21);
+
+            - label:
+                id: ingredient_title_22
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_22
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 22);
+                        else id(ingredient_checks) &= ~(1ULL << 22);
+
+            - label:
+                id: ingredient_title_23
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_23
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 23);
+                        else id(ingredient_checks) &= ~(1ULL << 23);
+
+            - label:
+                id: ingredient_title_24
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_24
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 24);
+                        else id(ingredient_checks) &= ~(1ULL << 24);
+
+            - label:
+                id: ingredient_title_25
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_25
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 25);
+                        else id(ingredient_checks) &= ~(1ULL << 25);
+
+            - label:
+                id: ingredient_title_26
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_26
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 26);
+                        else id(ingredient_checks) &= ~(1ULL << 26);
+
+            - label:
+                id: ingredient_title_27
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_27
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 27);
+                        else id(ingredient_checks) &= ~(1ULL << 27);
+
+            - label:
+                id: ingredient_title_28
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_28
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 28);
+                        else id(ingredient_checks) &= ~(1ULL << 28);
+
+            - label:
+                id: ingredient_title_29
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_29
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 29);
+                        else id(ingredient_checks) &= ~(1ULL << 29);
+
+            - label:
+                id: ingredient_title_30
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_30
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 30);
+                        else id(ingredient_checks) &= ~(1ULL << 30);
+
+            - label:
+                id: ingredient_title_31
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_31
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 31);
+                        else id(ingredient_checks) &= ~(1ULL << 31);
+
+            - label:
+                id: ingredient_title_32
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_32
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 32);
+                        else id(ingredient_checks) &= ~(1ULL << 32);
+
+            - label:
+                id: ingredient_title_33
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_33
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 33);
+                        else id(ingredient_checks) &= ~(1ULL << 33);
+
+            - label:
+                id: ingredient_title_34
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_34
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 34);
+                        else id(ingredient_checks) &= ~(1ULL << 34);
+
+            - label:
+                id: ingredient_title_35
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_35
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 35);
+                        else id(ingredient_checks) &= ~(1ULL << 35);
+
+            - label:
+                id: ingredient_title_36
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_36
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 36);
+                        else id(ingredient_checks) &= ~(1ULL << 36);
+
+            - label:
+                id: ingredient_title_37
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_37
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 37);
+                        else id(ingredient_checks) &= ~(1ULL << 37);
+
+            - label:
+                id: ingredient_title_38
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_38
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 38);
+                        else id(ingredient_checks) &= ~(1ULL << 38);
+
+            - label:
+                id: ingredient_title_39
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_39
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 39);
+                        else id(ingredient_checks) &= ~(1ULL << 39);
+
+            - label:
+                id: ingredient_title_40
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_40
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 40);
+                        else id(ingredient_checks) &= ~(1ULL << 40);
+
+            - label:
+                id: ingredient_title_41
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_41
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 41);
+                        else id(ingredient_checks) &= ~(1ULL << 41);
+
+            - label:
+                id: ingredient_title_42
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_42
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 42);
+                        else id(ingredient_checks) &= ~(1ULL << 42);
+
+            - label:
+                id: ingredient_title_43
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_43
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 43);
+                        else id(ingredient_checks) &= ~(1ULL << 43);
+
+            - label:
+                id: ingredient_title_44
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_44
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 44);
+                        else id(ingredient_checks) &= ~(1ULL << 44);
+
+            - label:
+                id: ingredient_title_45
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_45
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 45);
+                        else id(ingredient_checks) &= ~(1ULL << 45);
+
+            - label:
+                id: ingredient_title_46
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_46
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 46);
+                        else id(ingredient_checks) &= ~(1ULL << 46);
+
+            - label:
+                id: ingredient_title_47
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_47
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 47);
+                        else id(ingredient_checks) &= ~(1ULL << 47);
+
+            - label:
+                id: ingredient_title_48
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_48
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 48);
+                        else id(ingredient_checks) &= ~(1ULL << 48);
+
+            - label:
+                id: ingredient_title_49
+                width: 920
+                text: ""
+                text_font: font_ingredient_category
+                text_color: 0xCCCCCC
+                hidden: true
+                pad_top: 12
+                pad_bottom: 4
+
+            - checkbox:
+                id: ingredient_49
+                width: 920
+                text: ""
+                text_font: font_body
+                text_color: 0xCCCCCC
+                indicator:
+                    bg_opa: TRANSP
+                    border_width: 2
+                    border_color: 0xCCCCCC
+                    radius: 4
+                    checked:
+                        bg_color: 0xCCCCCC
+                        bg_opa: COVER
+                        border_color: 0xCCCCCC
+                        text_color: 0x444444
+                on_change:
+                    - lambda: |-
+                        if (x) id(ingredient_checks) |= (1ULL << 49);
+                        else id(ingredient_checks) &= ~(1ULL << 49);
+
+        - obj:
+
+            x: 0
+
+            y: 538
+
+            width: 1024
+
+            height: 62
+
+            radius: 0
+
+            pad_all: 0
+
+            scrollbar_mode: "OFF"
+
+            scrollable: false
+
+            bg_color: 0x222222
+
+            bg_opa: 80%
+
+            border_width: 1
+
+            border_color: 0x444444
+
+            border_opa: 70%
+
+            shadow_color: 0x020812
+
+            shadow_opa: 20%
+
+            shadow_width: 24
+
+            widgets:
+
+              - label:
+
+                  x: 0
+
+                  y: 21
+
+                  width: 328
+
+                  text_align: CENTER
+
+                  text: "< Previous"
+
+                  text_font: font_button
+
+                  text_color: 0x777777
+
+              - label:
+
+                  x: 328
+
+                  y: 21
+
+                  width: 368
+
+                  text_align: CENTER
+
+                  text: "Instructions"
+
+                  text_font: font_button
+
+                  text_color: 0xCCCCCC
+
+              - label:
+
+                  x: 696
+
+                  y: 21
+
+                  width: 328
+
+                  text_align: CENTER
+
+                  text: "Next >"
+
+                  text_font: font_button
+
+                  text_color: 0x777777

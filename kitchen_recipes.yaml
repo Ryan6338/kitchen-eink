@@ -1,3 +1,9 @@
+input_boolean:
+  kitchen_recipe_active:
+    name: Kitchen Recipe Active
+    icon: mdi:chef-hat
+
+
 input_text:
   kitchen_recipe_slug:
     name: Kitchen Recipe Slug
@@ -74,8 +80,15 @@ template:
           ingredients: >-
             {{
               mealie_result.recipe.ingredients
-              | map(attribute='display')
-              | list
+                | map(attribute='display')
+                | list
+            }}
+
+          ingredient_titles: >-
+            {{
+              mealie_result.recipe.ingredients
+                | map(attribute='title')
+                | list
             }}
 
           instructions: >-

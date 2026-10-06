@@ -4,11 +4,8 @@ substitutions:
 esphome:
   name: kitchen-display
   friendly_name: Kitchen Display
-  platformio_options:
-    build_flags: -DBOARD_HAS_PSRAM
-    board_build.arduino.memory_type: qio_opi
-    board_build.flash_mode: dio
-    board_upload.maximum_ram_size: 524288
+  build_flags:
+    - -DBOARD_HAS_PSRAM
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -43,6 +40,7 @@ wifi:
 
 packages:
   common: !include kitchen-common.yaml
+  ui: !include kitchen-lvgl.yaml
 
 i2c:
   id: display_i2c
@@ -51,14 +49,16 @@ i2c:
   frequency: 400kHz
   scan: true
 
-ch422g:
+waveshare_io_ch32v003:
   - id: display_io
+    address: 0x24
+    i2c_id: display_i2c
 
 output:
   - platform: gpio
     id: lcd_backlight_output
     pin:
-      ch422g: display_io
+      waveshare_io_ch32v003: display_io
       number: 2
       mode: OUTPUT
       inverted: false
@@ -71,15 +71,16 @@ light:
     restore_mode: ALWAYS_ON
 
 display:
-  - platform: rpi_dpi_rgb
+  - platform: mipi_rgb
+    model: RPI
     id: main_display
     dimensions:
-      width: 800
-      height: 480
+      width: 1024
+      height: 600
     color_order: RGB
     update_interval: never
     auto_clear_enabled: false
-    pclk_frequency: 16MHz
+    pclk_frequency: 30MHz
     pclk_inverted: true
     de_pin: GPIO5
     hsync_pin:
@@ -90,15 +91,15 @@ display:
       ignore_strapping_warning: true
     pclk_pin: GPIO7
     reset_pin:
-      ch422g: display_io
+      waveshare_io_ch32v003: display_io
       number: 3
       mode: OUTPUT
-    hsync_back_porch: 8
-    hsync_front_porch: 8
-    hsync_pulse_width: 4
-    vsync_back_porch: 16
-    vsync_front_porch: 16
-    vsync_pulse_width: 4
+    hsync_back_porch: 152
+    hsync_front_porch: 48
+    hsync_pulse_width: 162
+    vsync_back_porch: 13
+    vsync_front_porch: 3
+    vsync_pulse_width: 45
     data_pins:
       red:
         - GPIO1
@@ -119,7 +120,6 @@ display:
         - GPIO18
         - GPIO17
         - GPIO10
-    lambda: !include kitchen-render.yaml
 
 touchscreen:
   - platform: gt911
@@ -128,6 +128,6 @@ touchscreen:
     i2c_id: display_i2c
     interrupt_pin: GPIO4
     reset_pin:
-      ch422g: display_io
+      waveshare_io_ch32v003: display_io
       number: 1
       mode: OUTPUT

@@ -1,6 +1,6 @@
 # ===================================================================
 # KITCHEN RECIPE DISPLAY
-# Shared by the 800x480 Waveshare ESP32-S3 display and PC simulator.
+# Shared by the 1024x600 Waveshare ESP32-S3 display and PC simulator.
 # ===================================================================
 
 
@@ -14,7 +14,6 @@
 #   display_refresh_delay: 50ms
 #
 # ESP32-S3 LCD:
-#   display_refresh_delay: 50ms
 #
 # -------------------------------------------------------------------
 
@@ -30,6 +29,9 @@ esphome:
   on_boot:
     priority: -100
     then:
+      - light.turn_on:
+          id: lcd_backlight
+          brightness: 100%
       - script.execute: refresh_display
 
 
@@ -38,7 +40,8 @@ esphome:
 # -------------------------------------------------------------------
 
 image:
-  - file: assets/kitchen-background.png
+  - platform: file
+    file: assets/kitchen-background.png
     id: kitchen_background
     type: RGB565
 
@@ -52,13 +55,20 @@ image:
 # -------------------------------------------------------------------
 
 font:
+  - file: "assets/ProductSans-Regular.ttf"
+    id: font_clock
+    size: 300
+    bpp: 4
+    glyphs: "0123456789:- "
+
   - file:
       type: gfonts
       family: Roboto
-      weight: 300
-    id: font_clock
-    size: 260
+      weight: 700
+    id: font_ingredient_category
+    size: 18
     bpp: 4
+
   - file:
       type: gfonts
       family: Roboto
@@ -139,6 +149,11 @@ font:
 globals:
   - id: current_page
     type: int
+    restore_value: no
+    initial_value: '0'
+
+  - id: ingredient_checks
+    type: uint64_t
     restore_value: no
     initial_value: '0'
 
@@ -556,12 +571,8 @@ sensor:
 # DISPLAY REFRESH
 # -------------------------------------------------------------------
 #
-# Everything should use this rather than:
-#
-#   component.update: main_display
-#
-# That lets the simulator artificially delay the update while the
-# real display can set display_refresh_delay to 0s.
+# Update LVGL labels and select the active page after a short delay.
+# The simulator can delay updates; hardware can use 0s.
 #
 # mode: restart is intentional.
 #
@@ -575,9 +586,7 @@ script:
 
   - id: refresh_display
     mode: restart
-    then:
-      - delay: ${display_refresh_delay}
-      - component.update: main_display
+    then: !include kitchen-lvgl-refresh.yaml
 
   # Home Assistant sends the forecast attributes as a group. Give all of the
   # imported values a moment to settle before drawing a single new frame.
@@ -635,15 +644,15 @@ script:
 #
 # Screen dimensions:
 #
-#     800 x 480 (landscape)
+#     1024 x 600 (landscape)
 #
 # Bottom navigation starts at:
 #
-#     Y = 418
+#     Y = 538
 #
 # ---------------------------------------------------------------
 # |       Previous      |   Ingredients   |        Next         |
-# |      0 - 255        |    256 - 543    |     544 - 799       |
+# |      0 - 327        |    328 - 695    |     696 - 1023       |
 # ---------------------------------------------------------------
 #
 # -------------------------------------------------------------------
@@ -658,22 +667,81 @@ binary_sensor:
       then:
         - lambda: |-
             id(current_page) = 0;
+            id(ingredient_checks) = 0;
+
+        - lvgl.widget.update:
+            id:
+              - ingredient_0
+              - ingredient_1
+              - ingredient_2
+              - ingredient_3
+              - ingredient_4
+              - ingredient_5
+              - ingredient_6
+              - ingredient_7
+              - ingredient_8
+              - ingredient_9
+              - ingredient_10
+              - ingredient_11
+              - ingredient_12
+              - ingredient_13
+              - ingredient_14
+              - ingredient_15
+              - ingredient_16
+              - ingredient_17
+              - ingredient_18
+              - ingredient_19
+              - ingredient_20
+              - ingredient_21
+              - ingredient_22
+              - ingredient_23
+              - ingredient_24
+              - ingredient_25
+              - ingredient_26
+              - ingredient_27
+              - ingredient_28
+              - ingredient_29
+              - ingredient_30
+              - ingredient_31
+              - ingredient_32
+              - ingredient_33
+              - ingredient_34
+              - ingredient_35
+              - ingredient_36
+              - ingredient_37
+              - ingredient_38
+              - ingredient_39
+              - ingredient_40
+              - ingredient_41
+              - ingredient_42
+              - ingredient_43
+              - ingredient_44
+              - ingredient_45
+              - ingredient_46
+              - ingredient_47
+              - ingredient_48
+              - ingredient_49
+            state:
+              checked: false
+
         - script.execute: refresh_display
 
     on_release:
       then:
         - lambda: |-
             id(current_page) = 0;
+            id(ingredient_checks) = 0;
         - script.execute: refresh_display
+#   display_refresh_delay: 50ms
 
   - platform: touchscreen
     id: touch_previous
     touchscreen_id: main_touchscreen
 
     x_min: 0
-    x_max: 255
-    y_min: 418
-    y_max: 479
+    x_max: 327
+    y_min: 538
+    y_max: 599
 
     on_press:
       then:
@@ -699,10 +767,10 @@ binary_sensor:
     id: touch_middle
     touchscreen_id: main_touchscreen
 
-    x_min: 256
-    x_max: 543
-    y_min: 418
-    y_max: 479
+    x_min: 328
+    x_max: 695
+    y_min: 538
+    y_max: 599
 
     on_press:
       then:
@@ -727,10 +795,10 @@ binary_sensor:
     id: touch_next
     touchscreen_id: main_touchscreen
 
-    x_min: 544
-    x_max: 799
-    y_min: 418
-    y_max: 479
+    x_min: 696
+    x_max: 1023
+    y_min: 538
+    y_max: 599
 
     on_press:
       then:
@@ -738,8 +806,30 @@ binary_sensor:
             condition:
               lambda: |-
                 return id(current_page) == 1;
+
             then:
-              - homeassistant.action:
-                  action: input_number.increment
-                  data:
-                    entity_id: input_number.kitchen_recipe_step
+              - if:
+                  condition:
+                    lambda: |-
+                      int step = id(recipe_step).has_state()
+                        ? (int) id(recipe_step).state
+                        : 1;
+
+                      int count = id(recipe_step_count).has_state()
+                        ? (int) id(recipe_step_count).state
+                        : 1;
+
+                      if (count < 1)
+                        count = 1;
+
+                      return step < count;
+
+                  then:
+                    - homeassistant.action:
+                        action: input_number.increment
+                        data:
+                          entity_id: input_number.kitchen_recipe_step
+
+                  else:
+                    - homeassistant.action:
+                        action: script.clear_kitchen_recipe

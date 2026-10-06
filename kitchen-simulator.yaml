@@ -14,6 +14,7 @@ api:
 
 packages:
   common: !include kitchen-common.yaml
+  ui: !include kitchen-lvgl.yaml
 
 
 # ---------------------------------------------------------------
@@ -25,12 +26,12 @@ display:
     id: main_display
 
     dimensions:
-      width: 800
-      height: 480
+      width: 1024
+      height: 600
 
     update_interval: never
 
-    lambda: !include kitchen-render.yaml
+    auto_clear_enabled: false
 
 
 # ---------------------------------------------------------------

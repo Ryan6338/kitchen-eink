@@ -25,7 +25,10 @@
   const int SCREEN_HEIGHT = it.get_height();
 
   const int MARGIN = 24;
-  const int NAV_TOP = 418;
+  const int NAV_TOP = SCREEN_HEIGHT - 62;
+  const int NAV_CENTER_WIDTH = 368;
+  const int NAV_LEFT_WIDTH = (SCREEN_WIDTH - NAV_CENTER_WIDTH) / 2;
+  const int NAV_LABEL_Y = NAV_TOP + (SCREEN_HEIGHT - NAV_TOP) / 2;
 
 
   // ============================================================
@@ -157,40 +160,92 @@
   // IDLE CLOCK
   // ============================================================
   //
-  // When there is no active recipe, the front page is intentionally
-  // reduced to a single large hours-and-minutes readout.
+  // When there is no active recipe, show hours and minutes in separate
+  // translucent tiles over the wallpaper.
   //
   // ============================================================
 
   if (!id(recipe_active).state) {
     auto now = id(ha_time).now();
-    char time_buffer[16];
+    char hours[3];
+    char minutes[3];
 
     if (now.is_valid()) {
-      snprintf(
-        time_buffer,
-        sizeof(time_buffer),
-        "%02d:%02d",
-        now.hour,
-        now.minute
-      );
+      snprintf(hours, sizeof(hours), "%02d", now.hour);
+      snprintf(minutes, sizeof(minutes), "%02d", now.minute);
     } else {
-      snprintf(time_buffer, sizeof(time_buffer), "--:--");
+      snprintf(hours, sizeof(hours), "--");
+      snprintf(minutes, sizeof(minutes), "--");
     }
 
+    const int tile_width = 360;
+    const int tile_height = 356;
+    const int tile_gap = 32;
+    const int tile_left = (SCREEN_WIDTH - 2 * tile_width - tile_gap) / 2;
+    const int tile_top = (SCREEN_HEIGHT - tile_height) / 2;
+    const Color glass_tint = Color(42, 65, 82);
+
+    auto draw_glass_tile = [&](int x, int y) {
+      it.filled_rectangle(
+        x + 8, y + 10, tile_width, tile_height, Color(3, 8, 17)
+      );
+
+      // Blend the wallpaper with a cool tint so its glow remains visible.
+      for (int row = 1; row < tile_height - 1; row++) {
+        for (int col = 1; col < tile_width - 1; col++) {
+          Color bg = id(kitchen_background)->get_pixel(x + col, y + row);
+          it.draw_pixel_at(
+            x + col,
+            y + row,
+            Color(
+              (bg.r * 3 + glass_tint.r * 2) / 5,
+              (bg.g * 3 + glass_tint.g * 2) / 5,
+              (bg.b * 3 + glass_tint.b * 2) / 5
+            )
+          );
+        }
+      }
+
+      it.rectangle(x, y, tile_width, tile_height, Color(91, 130, 150));
+      it.rectangle(
+        x + 2, y + 2, tile_width - 4, tile_height - 4,
+        Color(38, 65, 83)
+      );
+      it.horizontal_line(
+        x + 24, y + 10, tile_width - 48, Color(134, 180, 194)
+      );
+      it.horizontal_line(
+        x + 24, y + tile_height - 12, tile_width - 48,
+        Color(45, 91, 103)
+      );
+    };
+
+    const int hours_x = tile_left + tile_width / 2;
+    const int minutes_left = tile_left + tile_width + tile_gap;
+    const int minutes_x = minutes_left + tile_width / 2;
+    const int digits_y = tile_top + tile_height / 2 - 20;
+    const int label_y = tile_top + tile_height - 31;
+
+    draw_glass_tile(tile_left, tile_top);
+    draw_glass_tile(minutes_left, tile_top);
+
     it.print(
-      SCREEN_WIDTH / 2,
-      SCREEN_HEIGHT / 2,
-      id(font_clock),
-      BLACK,
-      TextAlign::CENTER,
-      time_buffer
+      hours_x, digits_y, id(font_clock), BLACK, TextAlign::CENTER, hours
+    );
+    it.print(
+      minutes_x, digits_y, id(font_clock), BLACK, TextAlign::CENTER, minutes
+    );
+    it.print(
+      hours_x, label_y, id(font_meta), DARK_GRAY, TextAlign::CENTER, "HOURS"
+    );
+    it.print(
+      minutes_x, label_y, id(font_meta), DARK_GRAY, TextAlign::CENTER,
+      "MINUTES"
     );
 
     // Do not draw any recipe UI.
     return;
   }
-
 
   // ============================================================
   // GET RECIPE DATA FROM HOME ASSISTANT
@@ -729,9 +784,9 @@
 
   // The centre action is the primary control on every recipe page.
   it.filled_rectangle(
-    256,
+    NAV_LEFT_WIDTH,
     NAV_TOP,
-    288,
+    NAV_CENTER_WIDTH,
     SCREEN_HEIGHT - NAV_TOP,
     ACCENT_DARK
   );
@@ -755,7 +810,7 @@
   // ------------------------------------------------------------
 
   it.filled_rectangle(
-    256,
+    NAV_LEFT_WIDTH,
     NAV_TOP,
     1,
     SCREEN_HEIGHT - NAV_TOP,
@@ -764,7 +819,7 @@
 
 
   it.filled_rectangle(
-    544,
+    NAV_LEFT_WIDTH + NAV_CENTER_WIDTH,
     NAV_TOP,
     1,
     SCREEN_HEIGHT - NAV_TOP,
@@ -780,8 +835,8 @@
 
     // Start with ingredients, then use the centre button to toggle instructions.
     it.print(
-      128,
-      449,
+      NAV_LEFT_WIDTH / 2,
+      NAV_LABEL_Y,
       id(font_button),
       MID_GRAY,
       TextAlign::CENTER,
@@ -789,8 +844,8 @@
     );
 
     it.print(
-      400,
-      449,
+      SCREEN_WIDTH / 2,
+      NAV_LABEL_Y,
       id(font_button),
       BLACK,
       TextAlign::CENTER,
@@ -798,8 +853,8 @@
     );
 
     it.print(
-      672,
-      449,
+      SCREEN_WIDTH - NAV_LEFT_WIDTH / 2,
+      NAV_LABEL_Y,
       id(font_button),
       MID_GRAY,
       TextAlign::CENTER,
@@ -815,8 +870,8 @@
     if (step > 1) {
 
       it.print(
-        128,
-        449,
+        NAV_LEFT_WIDTH / 2,
+        NAV_LABEL_Y,
         id(font_button),
         BLACK,
         TextAlign::CENTER,
@@ -826,8 +881,8 @@
     } else {
 
       it.print(
-        128,
-        449,
+        NAV_LEFT_WIDTH / 2,
+        NAV_LABEL_Y,
         id(font_button),
         BLACK,
         TextAlign::CENTER,
@@ -841,8 +896,8 @@
     // ----------------------------------------------------------
 
     it.print(
-      400,
-      449,
+      SCREEN_WIDTH / 2,
+      NAV_LABEL_Y,
       id(font_button),
       BLACK,
       TextAlign::CENTER,
@@ -857,8 +912,8 @@
     if (step < step_count) {
 
       it.print(
-        672,
-        449,
+        SCREEN_WIDTH - NAV_LEFT_WIDTH / 2,
+        NAV_LABEL_Y,
         id(font_button),
         BLACK,
         TextAlign::CENTER,
@@ -868,8 +923,8 @@
     } else {
 
       it.print(
-        672,
-        449,
+        SCREEN_WIDTH - NAV_LEFT_WIDTH / 2,
+        NAV_LABEL_Y,
         id(font_button),
         MID_GRAY,
         TextAlign::CENTER,
@@ -886,8 +941,8 @@
     // Previous / Next aren't used on the ingredients page.
 
     it.print(
-      128,
-      449,
+      NAV_LEFT_WIDTH / 2,
+      NAV_LABEL_Y,
       id(font_button),
       MID_GRAY,
       TextAlign::CENTER,
@@ -896,8 +951,8 @@
 
 
     it.print(
-      400,
-      449,
+      SCREEN_WIDTH / 2,
+      NAV_LABEL_Y,
       id(font_button),
       BLACK,
       TextAlign::CENTER,
@@ -906,8 +961,8 @@
 
 
     it.print(
-      672,
-      449,
+      SCREEN_WIDTH - NAV_LEFT_WIDTH / 2,
+      NAV_LABEL_Y,
       id(font_button),
       MID_GRAY,
       TextAlign::CENTER,

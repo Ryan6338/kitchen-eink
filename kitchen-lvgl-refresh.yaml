@@ -1,0 +1,825 @@
+- delay: ${display_refresh_delay}
+
+- if:
+
+    condition:
+
+      lambda: |-
+
+        return !id(recipe_active).state;
+
+    then:
+
+      - lvgl.page.show: clock_page
+
+      - lvgl.label.update:
+
+          id: clock_hours
+
+          text: !lambda |-
+
+            auto now = id(ha_time).now();
+
+            char value[3];
+
+            if (now.is_valid()) {
+
+              snprintf(value, sizeof(value), "%02d", now.hour);
+
+            } else {
+
+              snprintf(value, sizeof(value), "--");
+
+            }
+
+            return std::string(value);
+
+      - lvgl.label.update:
+
+          id: clock_minutes
+
+          text: !lambda |-
+
+            auto now = id(ha_time).now();
+
+            char value[3];
+
+            if (now.is_valid()) {
+
+              snprintf(value, sizeof(value), "%02d", now.minute);
+
+            } else {
+
+              snprintf(value, sizeof(value), "--");
+
+            }
+
+            return std::string(value);
+
+    else:
+
+      - lvgl.label.update:
+
+          id: overview_title
+
+          text: !lambda |-
+
+            auto value = id(recipe_title).state;
+
+            if (value.empty() || value == "unknown" || value == "unavailable")
+
+              return std::string("Kitchen Recipe Display");
+
+            return value;
+
+      - lvgl.label.update:
+
+          id: instructions_title
+
+          text: !lambda |-
+
+            auto value = id(recipe_title).state;
+
+            if (value.empty() || value == "unknown" || value == "unavailable")
+
+              return std::string("Kitchen Recipe Display");
+
+            return value;
+
+      - lvgl.label.update:
+
+          id: ingredients_title
+
+          text: !lambda |-
+
+            auto value = id(recipe_title).state;
+
+            if (value.empty() || value == "unknown" || value == "unavailable")
+
+              return std::string("Kitchen Recipe Display");
+
+            return value;
+
+      - lvgl.label.update:
+
+          id: overview_servings
+
+          text: !lambda |-
+
+            auto value = id(recipe_servings).state;
+
+            if (value.empty() || value == "unknown" || value == "unavailable")
+
+              return std::string("");
+
+            return value + " servings";
+
+      - lvgl.label.update:
+
+          id: instructions_servings
+
+          text: !lambda |-
+
+            auto value = id(recipe_servings).state;
+
+            if (value.empty() || value == "unknown" || value == "unavailable")
+
+              return std::string("");
+
+            return value + " servings";
+
+      - lvgl.label.update:
+
+          id: ingredients_servings
+
+          text: !lambda |-
+
+            auto value = id(recipe_servings).state;
+
+            if (value.empty() || value == "unknown" || value == "unavailable")
+
+              return std::string("");
+
+            return value + " servings";
+
+      - lvgl.label.update:
+
+          id: overview_total
+
+          text: !lambda |-
+
+            auto value = id(recipe_total_time).state;
+
+            if (value.empty() || value == "unknown" || value == "unavailable")
+
+              return std::string("--");
+
+            return value;
+
+      - lvgl.label.update:
+
+          id: overview_prep
+
+          text: !lambda |-
+
+            auto value = id(recipe_prep_time).state;
+
+            if (value.empty() || value == "unknown" || value == "unavailable")
+
+              return std::string("--");
+
+            return value;
+
+      - lvgl.label.update:
+
+          id: overview_cook
+
+          text: !lambda |-
+
+            auto value = id(recipe_cook_time).state;
+
+            if (value.empty() || value == "unknown" || value == "unavailable")
+
+              return std::string("--");
+
+            return value;
+
+      - lvgl.label.update:
+
+          id: overview_steps
+
+          text: !lambda |-
+
+            int count = id(recipe_step_count).has_state()
+
+              ? (int) id(recipe_step_count).state
+
+              : 1;
+
+            if (count < 1)
+
+              count = 1;
+
+            return std::to_string(count) + (count == 1 ? " step" : " steps");
+
+      - lvgl.label.update:
+
+          id: instructions_step
+
+          text: !lambda |-
+
+            int step = id(recipe_step).has_state()
+
+              ? (int) id(recipe_step).state
+
+              : 1;
+
+            int count = id(recipe_step_count).has_state()
+
+              ? (int) id(recipe_step_count).state
+
+              : 1;
+
+            if (count < 1)
+
+              count = 1;
+
+            if (step < 1)
+
+              step = 1;
+
+            if (step > count)
+
+              step = count;
+
+            return "Step "
+
+              + std::to_string(step)
+
+              + " of "
+
+              + std::to_string(count);
+
+      - lvgl.label.update:
+
+          id: instructions_previous
+
+          text: !lambda |-
+
+            int step = id(recipe_step).has_state()
+
+              ? (int) id(recipe_step).state
+
+              : 1;
+
+            return std::string(step > 1 ? "< Previous" : "< Overview");
+
+      - lvgl.label.update:
+
+          id: instructions_next
+
+          text: !lambda |-
+
+            int step = id(recipe_step).has_state()
+
+              ? (int) id(recipe_step).state
+
+              : 1;
+
+            int count = id(recipe_step_count).has_state()
+
+              ? (int) id(recipe_step_count).state
+
+              : 1;
+
+            if (count < 1)
+
+              count = 1;
+
+            return std::string(step >= count ? "Finish" : "Next >");
+
+      - lvgl.bar.update:
+
+          id: instructions_progress
+
+          animated: false
+
+          value: !lambda |-
+
+            int step = id(recipe_step).has_state()
+
+              ? (int) id(recipe_step).state
+
+              : 1;
+
+            int count = id(recipe_step_count).has_state()
+
+              ? (int) id(recipe_step_count).state
+
+              : 1;
+
+            if (count < 1)
+
+              count = 1;
+
+            if (step < 0)
+
+              step = 0;
+
+            if (step > count)
+
+              step = count;
+
+            return (100.0f * step) / count;
+
+      - lvgl.label.update:
+
+          id: instructions_text
+
+          text: !lambda |-
+
+            auto value = id(recipe_instruction).state;
+
+            if (value.empty() || value == "unknown" || value == "unavailable")
+
+              return std::string("Waiting for recipe instructions...");
+
+            return value;
+
+      # ---------------------------------------------------------------
+
+      # INGREDIENT CHECKBOXES
+
+      # ---------------------------------------------------------------
+
+      #
+
+      # recipe_ingredients is expected to contain one ingredient per line.
+
+      #
+
+      # Up to 20 checkbox widgets are pre-created in kitchen-lvgl.yaml.
+
+      # Used rows are shown and populated. Unused rows are hidden.
+
+      #
+
+      # ingredient_checks stores the checked state as a bitmask.
+
+      #
+
+      # ---------------------------------------------------------------
+
+      - lambda: |-
+
+          std::string value = id(recipe_ingredients).state;
+
+          lv_obj_t *boxes[] = {
+
+            id(ingredient_0),
+
+            id(ingredient_1),
+
+            id(ingredient_2),
+
+            id(ingredient_3),
+
+            id(ingredient_4),
+
+            id(ingredient_5),
+
+            id(ingredient_6),
+
+            id(ingredient_7),
+
+            id(ingredient_8),
+
+            id(ingredient_9),
+
+            id(ingredient_10),
+
+            id(ingredient_11),
+
+            id(ingredient_12),
+
+            id(ingredient_13),
+
+            id(ingredient_14),
+
+            id(ingredient_15),
+
+            id(ingredient_16),
+
+            id(ingredient_17),
+
+            id(ingredient_18),
+
+            id(ingredient_19),
+
+            id(ingredient_20),
+
+            id(ingredient_21),
+
+            id(ingredient_22),
+
+            id(ingredient_23),
+
+            id(ingredient_24),
+
+            id(ingredient_25),
+
+            id(ingredient_26),
+
+            id(ingredient_27),
+
+            id(ingredient_28),
+
+            id(ingredient_29),
+
+            id(ingredient_30),
+
+            id(ingredient_31),
+
+            id(ingredient_32),
+
+            id(ingredient_33),
+
+            id(ingredient_34),
+
+            id(ingredient_35),
+
+            id(ingredient_36),
+
+            id(ingredient_37),
+
+            id(ingredient_38),
+
+            id(ingredient_39),
+
+            id(ingredient_40),
+
+            id(ingredient_41),
+
+            id(ingredient_42),
+
+            id(ingredient_43),
+
+            id(ingredient_44),
+
+            id(ingredient_45),
+
+            id(ingredient_46),
+
+            id(ingredient_47),
+
+            id(ingredient_48),
+
+            id(ingredient_49)
+
+          };
+
+          lv_obj_t *titles[] = {
+
+            id(ingredient_title_0),
+
+            id(ingredient_title_1),
+
+            id(ingredient_title_2),
+
+            id(ingredient_title_3),
+
+            id(ingredient_title_4),
+
+            id(ingredient_title_5),
+
+            id(ingredient_title_6),
+
+            id(ingredient_title_7),
+
+            id(ingredient_title_8),
+
+            id(ingredient_title_9),
+
+            id(ingredient_title_10),
+
+            id(ingredient_title_11),
+
+            id(ingredient_title_12),
+
+            id(ingredient_title_13),
+
+            id(ingredient_title_14),
+
+            id(ingredient_title_15),
+
+            id(ingredient_title_16),
+
+            id(ingredient_title_17),
+
+            id(ingredient_title_18),
+
+            id(ingredient_title_19),
+
+            id(ingredient_title_20),
+
+            id(ingredient_title_21),
+
+            id(ingredient_title_22),
+
+            id(ingredient_title_23),
+
+            id(ingredient_title_24),
+
+            id(ingredient_title_25),
+
+            id(ingredient_title_26),
+
+            id(ingredient_title_27),
+
+            id(ingredient_title_28),
+
+            id(ingredient_title_29),
+
+            id(ingredient_title_30),
+
+            id(ingredient_title_31),
+
+            id(ingredient_title_32),
+
+            id(ingredient_title_33),
+
+            id(ingredient_title_34),
+
+            id(ingredient_title_35),
+
+            id(ingredient_title_36),
+
+            id(ingredient_title_37),
+
+            id(ingredient_title_38),
+
+            id(ingredient_title_39),
+
+            id(ingredient_title_40),
+
+            id(ingredient_title_41),
+
+            id(ingredient_title_42),
+
+            id(ingredient_title_43),
+
+            id(ingredient_title_44),
+
+            id(ingredient_title_45),
+
+            id(ingredient_title_46),
+
+            id(ingredient_title_47),
+
+            id(ingredient_title_48),
+
+            id(ingredient_title_49)
+
+          };
+
+          constexpr int MAX_INGREDIENTS = 50;
+
+          // Hide everything first.
+
+          for (int i = 0; i < MAX_INGREDIENTS; i++) {
+
+            lv_obj_add_flag(boxes[i], LV_OBJ_FLAG_HIDDEN);
+
+            lv_obj_add_flag(titles[i], LV_OBJ_FLAG_HIDDEN);
+
+          }
+
+          if (
+
+            value.empty()
+
+            || value == "unknown"
+
+            || value == "unavailable"
+
+          ) {
+
+            return;
+
+          }
+
+          // ------------------------------------------------------------
+
+          // Replace Unicode fractions with ASCII equivalents.
+
+          // ------------------------------------------------------------
+
+          auto replace_all = [&](const std::string &from, const std::string &to) {
+
+            size_t pos = 0;
+
+            while ((pos = value.find(from, pos)) != std::string::npos) {
+
+              value.replace(pos, from.size(), to);
+
+              pos += to.size();
+
+            }
+
+          };
+
+          replace_all("¼", "1/4");
+
+          replace_all("½", "1/2");
+
+          replace_all("¾", "3/4");
+
+          replace_all("⅐", "1/7");
+
+          replace_all("⅑", "1/9");
+
+          replace_all("⅒", "1/10");
+
+          replace_all("⅓", "1/3");
+
+          replace_all("⅔", "2/3");
+
+          replace_all("⅕", "1/5");
+
+          replace_all("⅖", "2/5");
+
+          replace_all("⅗", "3/5");
+
+          replace_all("⅘", "4/5");
+
+          replace_all("⅙", "1/6");
+
+          replace_all("⅚", "5/6");
+
+          replace_all("⅛", "1/8");
+
+          replace_all("⅜", "3/8");
+
+          replace_all("⅝", "5/8");
+
+          replace_all("⅞", "7/8");
+
+          replace_all("⁄", "/");
+
+          // ------------------------------------------------------------
+
+          // Parse the line-based ingredient format.
+
+          //
+
+          // # title
+
+          // ingredient
+
+          // ingredient
+
+          // # title
+
+          // ingredient
+
+          // ------------------------------------------------------------
+
+          int index = 0;
+
+          size_t start = 0;
+
+          std::string pending_title;
+
+          while (start <= value.length() && index < MAX_INGREDIENTS) {
+
+            size_t end = value.find('\n', start);
+
+            if (end == std::string::npos) {
+
+              end = value.length();
+
+            }
+
+            std::string line = value.substr(start, end - start);
+
+            // Remove carriage return from CRLF.
+
+            if (!line.empty() && line.back() == '\r') {
+
+              line.pop_back();
+
+            }
+
+            // ----------------------------------------------------------
+
+            // Category heading
+
+            // ----------------------------------------------------------
+
+            if (line.rfind("# ", 0) == 0) {
+
+              pending_title = line.substr(2);
+
+            // ----------------------------------------------------------
+
+            // Actual ingredient
+
+            // ----------------------------------------------------------
+
+            } else if (!line.empty()) {
+
+              // Show category heading immediately above this ingredient.
+
+              if (!pending_title.empty()) {
+
+                lv_label_set_text(
+
+                  titles[index],
+
+                  pending_title.c_str()
+
+                );
+
+                lv_obj_clear_flag(
+
+                  titles[index],
+
+                  LV_OBJ_FLAG_HIDDEN
+
+                );
+
+                pending_title.clear();
+
+              }
+
+              // Set ingredient text.
+
+              lv_checkbox_set_text(
+
+                boxes[index],
+
+                line.c_str()
+
+              );
+
+              // Restore remembered checkbox state.
+
+              if (id(ingredient_checks) & (1ULL << index)) {
+
+                lv_obj_add_state(
+
+                  boxes[index],
+
+                  LV_STATE_CHECKED
+
+                );
+
+              } else {
+
+                lv_obj_clear_state(
+
+                  boxes[index],
+
+                  LV_STATE_CHECKED
+
+                );
+
+              }
+
+              lv_obj_clear_flag(
+
+                boxes[index],
+
+                LV_OBJ_FLAG_HIDDEN
+
+              );
+
+              index++;
+
+            }
+
+            if (end >= value.length()) {
+
+              break;
+
+            }
+
+            start = end + 1;
+
+          }
+
+      # ---------------------------------------------------------------
+
+      # ACTIVE RECIPE PAGE
+
+      # ---------------------------------------------------------------
+
+      - if:
+
+          condition:
+
+            lambda: |-
+
+              return id(current_page) == 0;
+
+          then:
+
+            - lvgl.page.show: overview_page
+
+          else:
+
+            - if:
+
+                condition:
+
+                  lambda: |-
+
+                    return id(current_page) == 1;
+
+                then:
+
+                  - lvgl.page.show: instructions_page
+
+                else:
+
+                  - lvgl.page.show: ingredients_page
