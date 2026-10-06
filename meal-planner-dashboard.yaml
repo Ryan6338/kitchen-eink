@@ -1,0 +1,209 @@
+title: Kitchen Meal Planner
+views:
+  - title: Meal Planner
+    path: kitchen-meal-planner
+    icon: mdi:calendar-heart
+    type: sections
+    max_columns: 2
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: This week's meals
+            icon: mdi:calendar-week
+          - type: conditional
+            conditions:
+              - entity: binary_sensor.kitchen_next_week_selection_due
+                state: "on"
+            card:
+              type: vertical-stack
+              cards:
+                - type: markdown
+                  content: |
+                    ## Select your meals for next week
+
+                    Choose or edit the four meals, lock them in, and the grocery list will be generated automatically.
+                - type: button
+                  name: Start meal selection
+                  icon: mdi:calendar-edit
+                  tap_action:
+                    action: call-service
+                    service: script.kitchen_start_next_week_selection
+          - type: conditional
+            conditions:
+              - entity: input_boolean.kitchen_next_week_selection_active
+                state: "off"
+            card:
+              type: grid
+              columns: 2
+              square: false
+              cards:
+                - type: button
+                  entity: sensor.kitchen_meal_card_1
+                  name: Meal 1
+                  show_state: true
+                  tap_action:
+                    action: call-service
+                    service: script.kitchen_open_meal
+                    data: {slot: 1}
+                - type: button
+                  entity: sensor.kitchen_meal_card_2
+                  name: Meal 2
+                  show_state: true
+                  tap_action:
+                    action: call-service
+                    service: script.kitchen_open_meal
+                    data: {slot: 2}
+                - type: button
+                  entity: sensor.kitchen_meal_card_3
+                  name: Meal 3
+                  show_state: true
+                  tap_action:
+                    action: call-service
+                    service: script.kitchen_open_meal
+                    data: {slot: 3}
+                - type: button
+                  entity: sensor.kitchen_meal_card_4
+                  name: Meal 4
+                  show_state: true
+                  tap_action:
+                    action: call-service
+                    service: script.kitchen_open_meal
+                    data: {slot: 4}
+          - type: conditional
+            conditions:
+              - entity: input_boolean.kitchen_next_week_selection_active
+                state: "on"
+            card:
+              type: vertical-stack
+              cards:
+                - type: markdown
+                  content: "## Select and lock next week's meals"
+                - type: entities
+                  entities:
+                    - entity: input_text.kitchen_meal_1
+                      name: Meal 1 recipe
+                    - entity: input_boolean.kitchen_meal_lock_1
+                      name: Lock meal 1
+                    - entity: input_text.kitchen_meal_2
+                      name: Meal 2 recipe
+                    - entity: input_boolean.kitchen_meal_lock_2
+                      name: Lock meal 2
+                    - entity: input_text.kitchen_meal_3
+                      name: Meal 3 recipe
+                    - entity: input_boolean.kitchen_meal_lock_3
+                      name: Lock meal 3
+                    - entity: input_text.kitchen_meal_4
+                      name: Meal 4 recipe
+                    - entity: input_boolean.kitchen_meal_lock_4
+                      name: Lock meal 4
+                - type: conditional
+                  conditions:
+                    - entity: input_number.kitchen_meals_this_week
+                      condition: numeric_state
+                      above: 4
+                  card:
+                    type: entities
+                    title: Additional recipe 5
+                    entities:
+                      - entity: input_text.kitchen_meal_5
+                        name: Meal 5 recipe
+                      - entity: input_boolean.kitchen_meal_lock_5
+                        name: Lock meal 5
+                - type: conditional
+                  conditions:
+                    - entity: input_number.kitchen_meals_this_week
+                      condition: numeric_state
+                      above: 5
+                  card:
+                    type: entities
+                    title: Additional recipe 6
+                    entities:
+                      - entity: input_text.kitchen_meal_6
+                        name: Meal 6 recipe
+                      - entity: input_boolean.kitchen_meal_lock_6
+                        name: Lock meal 6
+                - type: conditional
+                  conditions:
+                    - entity: input_number.kitchen_meals_this_week
+                      condition: numeric_state
+                      above: 6
+                  card:
+                    type: entities
+                    title: Additional recipe 7
+                    entities:
+                      - entity: input_text.kitchen_meal_7
+                        name: Meal 7 recipe
+                      - entity: input_boolean.kitchen_meal_lock_7
+                        name: Lock meal 7
+                - type: conditional
+                  conditions:
+                    - entity: input_number.kitchen_meals_this_week
+                      condition: numeric_state
+                      below: 7
+                  card:
+                    type: button
+                    name: Add another recipe
+                    icon: mdi:plus-circle
+                    tap_action:
+                      action: call-service
+                      service: script.kitchen_add_selection_recipe
+                - type: button
+                  name: Done — lock meals and create grocery list
+                  icon: mdi:check-all
+                  tap_action:
+                    action: call-service
+                    service: script.kitchen_finish_next_week_selection
+      - type: grid
+        cards:
+          - type: conditional
+            conditions:
+              - entity: input_boolean.kitchen_meal_detail_active
+                state: "on"
+            card:
+              type: vertical-stack
+              cards:
+                - type: markdown
+                  content: |
+                    # {{ states('sensor.kitchen_recipe_display') }}
+
+                    **Servings:** {{ state_attr('sensor.kitchen_recipe_display', 'servings') | default('--') }}  
+                    **Time:** {{ state_attr('sensor.kitchen_recipe_display', 'total_time') | default('--') }}
+
+                    ## Ingredients
+                    {{ state_attr('sensor.kitchen_recipe_display', 'ingredients') | default([]) | join('\n') }}
+
+                    ## Current step
+                    {{ state_attr('sensor.kitchen_recipe_display', 'instruction') | default('Open the recipe display for cooking steps.') }}
+                - type: grid
+                  columns: 2
+                  cards:
+                    - type: button
+                      name: Cooked
+                      icon: mdi:check-circle
+                      tap_action:
+                        action: call-service
+                        service: script.kitchen_cook_selected_meal
+                    - type: button
+                      name: Back to menu
+                      icon: mdi:arrow-left
+                      tap_action:
+                        action: call-service
+                        service: script.kitchen_back_to_menu
+          - type: conditional
+            conditions:
+              - entity: input_boolean.kitchen_meal_detail_active
+                state: "off"
+            card:
+              type: markdown
+              content: |
+                Tap a meal card to open its recipe. A check mark means it has been cooked.
+          - type: heading
+            heading: Shopping lists
+            icon: mdi:cart
+          - type: todo-list
+            entity: todo.mealie_shopping_list
+            title: Meal groceries
+          - type: todo-list
+            entity: todo.kitchen_household_list
+            title: Household list

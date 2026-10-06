@@ -1,0 +1,15 @@
+language: en
+intents:
+  KitchenIngredientMeals:
+    data:
+      - sentences:
+          - "what recipes did I buy {ingredient} for this week"
+          - "which recipes did I buy {ingredient} for this week"
+          - "what meals use {ingredient} this week"
+          - "which meals use {ingredient}"
+  AddHouseholdItem:
+    data:
+      - sentences:
+          - "add {item} to my list"
+          - "add {item} to the household list"
+          - "put {item} on my list"
