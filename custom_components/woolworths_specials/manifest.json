@@ -1,0 +1,11 @@
+{
+  "domain": "woolworths_specials",
+  "name": "Woolworths Specials",
+  "version": "0.1.0",
+  "documentation": "https://www.woolworths.com.au/shop/browse/specials",
+  "issue_tracker": "https://github.com/home-assistant/core/issues",
+  "codeowners": [],
+  "config_flow": true,
+  "iot_class": "cloud_polling",
+  "requirements": []
+}

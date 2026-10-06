@@ -41,6 +41,12 @@ image:
   - file: assets/kitchen-background.png
     id: kitchen_background
     type: RGB565
+  - file: assets/day-clock.png
+    id: day_clock_background
+    type: RGB565
+  - file: assets/night-clock.png
+    id: night_clock_background
+    type: RGB565
 
 
 # -------------------------------------------------------------------
@@ -175,6 +181,19 @@ text_sensor:
   - platform: homeassistant
     id: weather_condition
     entity_id: weather.redcliffe
+
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: |-
+                return !id(recipe_active).state;
+            then:
+              - script.execute: refresh_display
+
+  - platform: homeassistant
+    id: sun_state
+    entity_id: sun.sun
 
     on_value:
       then:

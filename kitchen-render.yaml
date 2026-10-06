@@ -150,7 +150,18 @@
 
   // Draw the native-resolution wallpaper first. All dashboard panels and
   // recipe content are layered over it with opaque dark surfaces.
-  it.image(0, 0, id(kitchen_background));
+  // The idle clock uses the orange daytime artwork while the sun is above
+  // the horizon and the purple artwork after sunset. Recipe pages retain
+  // the existing dark kitchen background below.
+  if (!id(recipe_active).state) {
+    if (id(sun_state).state == "above_horizon") {
+      it.image(0, 0, id(day_clock_background));
+    } else {
+      it.image(0, 0, id(night_clock_background));
+    }
+  } else {
+    it.image(0, 0, id(kitchen_background));
+  }
 
 
   // ============================================================
