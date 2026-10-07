@@ -1,5 +1,21 @@
 - delay: ${display_refresh_delay}
 
+- lvgl.label.update:
+    id: meal_card_1_caption
+    text: !lambda 'return id(meal_card_1_title).state == "unknown" ? "Unassigned recipe" : id(meal_card_1_title).state;'
+
+- lvgl.label.update:
+    id: meal_card_2_caption
+    text: !lambda 'return id(meal_card_2_title).state == "unknown" ? "Unassigned recipe" : id(meal_card_2_title).state;'
+
+- lvgl.label.update:
+    id: meal_card_3_caption
+    text: !lambda 'return id(meal_card_3_title).state == "unknown" ? "Unassigned recipe" : id(meal_card_3_title).state;'
+
+- lvgl.label.update:
+    id: meal_card_4_caption
+    text: !lambda 'return id(meal_card_4_title).state == "unknown" ? "Unassigned recipe" : id(meal_card_4_title).state;'
+
 - if:
 
     condition:
@@ -9,52 +25,38 @@
         return !id(recipe_active).state;
 
     then:
-
-      - lvgl.page.show: clock_page
-
-      - lvgl.label.update:
-
-          id: clock_hours
-
-          text: !lambda |-
-
-            auto now = id(ha_time).now();
-
-            char value[3];
-
-            if (now.is_valid()) {
-
-              snprintf(value, sizeof(value), "%02d", now.hour);
-
-            } else {
-
-              snprintf(value, sizeof(value), "--");
-
-            }
-
-            return std::string(value);
-
-      - lvgl.label.update:
-
-          id: clock_minutes
-
-          text: !lambda |-
-
-            auto now = id(ha_time).now();
-
-            char value[3];
-
-            if (now.is_valid()) {
-
-              snprintf(value, sizeof(value), "%02d", now.minute);
-
-            } else {
-
-              snprintf(value, sizeof(value), "--");
-
-            }
-
-            return std::string(value);
+      - if:
+          condition:
+            lambda: 'return id(kitchen_display_page).state == "meal_planner";'
+          then:
+            - lvgl.page.show: meal_planner_page
+      - if:
+          condition:
+            lambda: 'return id(kitchen_display_page).state != "meal_planner";'
+          then:
+            - lvgl.page.show: clock_page
+            - lvgl.label.update:
+                id: clock_hours
+                text: !lambda |-
+                  auto now = id(ha_time).now();
+                  char value[3];
+                  if (now.is_valid()) {
+                    snprintf(value, sizeof(value), "%02d", now.hour);
+                  } else {
+                    snprintf(value, sizeof(value), "--");
+                  }
+                  return std::string(value);
+            - lvgl.label.update:
+                id: clock_minutes
+                text: !lambda |-
+                  auto now = id(ha_time).now();
+                  char value[3];
+                  if (now.is_valid()) {
+                    snprintf(value, sizeof(value), "%02d", now.minute);
+                  } else {
+                    snprintf(value, sizeof(value), "--");
+                  }
+                  return std::string(value);
 
     else:
 

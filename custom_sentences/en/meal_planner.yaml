@@ -1,5 +1,18 @@
 language: en
 intents:
+  OpenKitchenMealPlanner:
+    data:
+      - sentences:
+          - "open mealie"
+          - "open meal planner"
+          - "show me my meals for the week"
+          - "start cooking"
+  CloseKitchenMealPlanner:
+    data:
+      - sentences:
+          - "close meal planner"
+          - "close the meal planner"
+          - "go back to the clock"
   KitchenIngredientMeals:
     data:
       - sentences:
@@ -7,9 +20,40 @@ intents:
           - "which recipes did I buy {ingredient} for this week"
           - "what meals use {ingredient} this week"
           - "which meals use {ingredient}"
+  SearchKitchenRecipe:
+    data:
+      - sentences:
+          - "search for {query}"
+          - "find recipe {query}"
+          - "find {query} recipes"
+          - "look for {query}"
+          - "show me {query} recipes"
+  AddKitchenRecipeToMealPlan:
+    data:
+      - sentences:
+          - "add {query} to my meal plan"
+          - "put {query} on my meal plan"
+          - "add recipe {query} to the meal plan"
   AddHouseholdItem:
     data:
       - sentences:
           - "add {item} to my list"
           - "add {item} to the household list"
           - "put {item} on my list"
+  RandomiseKitchenMeals:
+    data:
+      - sentences:
+          - "randomise meals"
+          - "randomize meals"
+          - "shuffle my meals"
+          - "shuffle my meal plan"
+          - "randomise my meal plan"
+          - "randomize my meal plan"
+
+lists:
+  ingredient:
+    wildcard: true
+  query:
+    wildcard: true
+  item:
+    wildcard: true

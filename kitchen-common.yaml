@@ -3,10 +3,12 @@
 # Shared by the 1024x600 Waveshare ESP32-S3 display and PC simulator.
 # ===================================================================
 
-
 # -------------------------------------------------------------------
 # DEFAULT SUBSTITUTIONS
 # -------------------------------------------------------------------
+
+lvgl: !include kitchen-lvgl.yaml
+
 #
 # Hardware configs can override these.
 #
@@ -16,10 +18,6 @@
 # ESP32-S3 LCD:
 #
 # -------------------------------------------------------------------
-
-substitutions:
-  display_refresh_delay: 0s
-
 
 # -------------------------------------------------------------------
 # INITIAL DISPLAY REFRESH
@@ -41,13 +39,11 @@ esphome:
 
 image:
   - platform: file
-    file: assets/kitchen-background.png
-    id: kitchen_background
-    type: RGB565
-  - file: assets/day-clock.png
+    file: assets/day-clock.png
     id: day_clock_background
     type: RGB565
-  - file: assets/night-clock.png
+  - platform: file
+    file: assets/night-clock.png
     id: night_clock_background
     type: RGB565
 
@@ -61,9 +57,9 @@ image:
 # -------------------------------------------------------------------
 
 font:
-  - file: "assets/ProductSans-Regular.ttf"
+  - file: "assets/laries.otf"
     id: font_clock
-    size: 300
+    size: 205
     bpp: 4
     glyphs: "0123456789:- "
 
@@ -138,6 +134,23 @@ font:
     id: font_title
     size: 32
     bpp: 4
+
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 700
+    id: font_meal_planner_title
+    size: 42
+    bpp: 4
+
+  - file:
+      type: gfonts
+      family: Roboto
+      weight: 400
+    id: font_meal_question
+    size: 180
+    bpp: 4
+    glyphs: "?"
 
   - file:
       type: gfonts
@@ -218,6 +231,84 @@ text_sensor:
                 return !id(recipe_active).state;
             then:
               - script.execute: refresh_display
+
+  - platform: homeassistant
+    id: kitchen_display_page
+    entity_id: input_select.kitchen_display_page
+
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: 'return x == "clock";'
+            then:
+              - lvgl.page.show: clock_page
+        - if:
+            condition:
+              lambda: 'return x == "meal_planner";'
+            then:
+              - lvgl.page.show: meal_planner_page
+  - platform: homeassistant
+    id: meal_card_1_title
+    entity_id: input_text.kitchen_meal_1
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: meal_card_1_caption
+            text: !lambda "return x;"
+        - script.execute: refresh_display
+  - platform: homeassistant
+    id: meal_card_2_title
+    entity_id: input_text.kitchen_meal_2
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: meal_card_2_caption
+            text: !lambda "return x;"
+        - script.execute: refresh_display
+  - platform: homeassistant
+    id: meal_card_3_title
+    entity_id: input_text.kitchen_meal_3
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: meal_card_3_caption
+            text: !lambda "return x;"
+        - script.execute: refresh_display
+  - platform: homeassistant
+    id: meal_card_4_title
+    entity_id: input_text.kitchen_meal_4
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: meal_card_4_caption
+            text: !lambda "return x;"
+        - script.execute: refresh_display
+  - platform: homeassistant
+    id: meal_card_5_title
+    entity_id: input_text.kitchen_meal_5
+    on_value:
+      then:
+        - script.execute: refresh_display
+  - platform: homeassistant
+    id: meal_card_6_title
+    entity_id: input_text.kitchen_meal_6
+    on_value:
+      then:
+        - script.execute: refresh_display
+  - platform: homeassistant
+    id: meal_card_7_title
+    entity_id: input_text.kitchen_meal_7
+    on_value:
+      then:
+        - script.execute: refresh_display
+
+  - platform: homeassistant
+    id: kitchen_meals_this_week
+    entity_id: input_number.kitchen_meals_this_week
+    on_value:
+      then:
+        - script.execute: refresh_display
 
   # Daily forecast data is supplied by sensor.kitchen_weather_forecast.
   # Its attributes are day_0_name/condition through day_6_name/condition,

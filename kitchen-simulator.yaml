@@ -12,9 +12,7 @@ logger:
 
 api:
 
-packages:
-  common: !include kitchen-common.yaml
-  ui: !include kitchen-lvgl.yaml
+<<: !include kitchen-common.yaml
 
 
 # ---------------------------------------------------------------

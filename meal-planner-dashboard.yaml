@@ -13,7 +13,7 @@ views:
             icon: mdi:calendar-week
           - type: conditional
             conditions:
-              - entity: binary_sensor.kitchen_next_week_selection_due
+              - entity: sensor.kitchen_next_week_selection_due
                 state: "on"
             card:
               type: vertical-stack

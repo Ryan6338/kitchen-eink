@@ -38,9 +38,7 @@ wifi:
   password: !secret wifi_password
   power_save_mode: none
 
-packages:
-  common: !include kitchen-common.yaml
-  ui: !include kitchen-lvgl.yaml
+<<: !include kitchen-common.yaml
 
 i2c:
   id: display_i2c
