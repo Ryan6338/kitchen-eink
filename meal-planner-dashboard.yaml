@@ -39,36 +39,36 @@ views:
               square: false
               cards:
                 - type: button
-                  entity: sensor.kitchen_meal_card_1
-                  name: Meal 1
+                  entity: input_text.kitchen_meal_1
+                  name: Meal 1 — tap to randomise
                   show_state: true
                   tap_action:
                     action: call-service
-                    service: script.kitchen_open_meal
+                    service: script.kitchen_generate_meal_slot_from_mealie
                     data: {slot: 1}
                 - type: button
-                  entity: sensor.kitchen_meal_card_2
-                  name: Meal 2
+                  entity: input_text.kitchen_meal_2
+                  name: Meal 2 — tap to randomise
                   show_state: true
                   tap_action:
                     action: call-service
-                    service: script.kitchen_open_meal
+                    service: script.kitchen_generate_meal_slot_from_mealie
                     data: {slot: 2}
                 - type: button
-                  entity: sensor.kitchen_meal_card_3
-                  name: Meal 3
+                  entity: input_text.kitchen_meal_3
+                  name: Meal 3 — tap to randomise
                   show_state: true
                   tap_action:
                     action: call-service
-                    service: script.kitchen_open_meal
+                    service: script.kitchen_generate_meal_slot_from_mealie
                     data: {slot: 3}
                 - type: button
-                  entity: sensor.kitchen_meal_card_4
-                  name: Meal 4
+                  entity: input_text.kitchen_meal_4
+                  name: Meal 4 — tap to randomise
                   show_state: true
                   tap_action:
                     action: call-service
-                    service: script.kitchen_open_meal
+                    service: script.kitchen_generate_meal_slot_from_mealie
                     data: {slot: 4}
           - type: conditional
             conditions:

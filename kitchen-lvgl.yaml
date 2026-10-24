@@ -160,7 +160,7 @@ pages:
                 y: 120
                 width: 208
                 height: 150
-                text: "?"
+                text: ""
                 text_align: CENTER
                 text_font: font_meal_question
                 text_color: 0xFFFFFF
@@ -170,14 +170,14 @@ pages:
                 y: 18
                 width: 208
                 height: 58
-                text: "Unassigned"
+                text: "Unassigned recipe"
                 text_align: CENTER
                 text_font: font_body_compact
                 text_color: 0xFFFFFF
                 long_mode: WRAP
           on_click:
             - homeassistant.action:
-                action: script.kitchen_open_meal
+                action: script.kitchen_generate_meal_slot_from_mealie
                 data: {slot: "1"}
 
       - button:
@@ -195,7 +195,7 @@ pages:
                 y: 120
                 width: 208
                 height: 150
-                text: "?"
+                text: ""
                 text_align: CENTER
                 text_font: font_meal_question
                 text_color: 0xFFFFFF
@@ -205,14 +205,14 @@ pages:
                 y: 18
                 width: 208
                 height: 58
-                text: "Unassigned"
+                text: "Unassigned recipe"
                 text_align: CENTER
                 text_font: font_body_compact
                 text_color: 0xFFFFFF
                 long_mode: WRAP
           on_click:
             - homeassistant.action:
-                action: script.kitchen_open_meal
+                action: script.kitchen_generate_meal_slot_from_mealie
                 data: {slot: "2"}
 
       - button:
@@ -230,7 +230,7 @@ pages:
                 y: 120
                 width: 208
                 height: 150
-                text: "?"
+                text: ""
                 text_align: CENTER
                 text_font: font_meal_question
                 text_color: 0xFFFFFF
@@ -240,14 +240,14 @@ pages:
                 y: 18
                 width: 208
                 height: 58
-                text: "Unassigned"
+                text: "Unassigned recipe"
                 text_align: CENTER
                 text_font: font_body_compact
                 text_color: 0xFFFFFF
                 long_mode: WRAP
           on_click:
             - homeassistant.action:
-                action: script.kitchen_open_meal
+                action: script.kitchen_generate_meal_slot_from_mealie
                 data: {slot: "3"}
 
       - button:
@@ -265,7 +265,7 @@ pages:
                 y: 120
                 width: 208
                 height: 150
-                text: "?"
+                text: ""
                 text_align: CENTER
                 text_font: font_meal_question
                 text_color: 0xFFFFFF
@@ -275,14 +275,14 @@ pages:
                 y: 18
                 width: 208
                 height: 58
-                text: "Unassigned"
+                text: "Unassigned recipe"
                 text_align: CENTER
                 text_font: font_body_compact
                 text_color: 0xFFFFFF
                 long_mode: WRAP
           on_click:
             - homeassistant.action:
-                action: script.kitchen_open_meal
+                action: script.kitchen_generate_meal_slot_from_mealie
                 data: {slot: "4"}
 
       - button:

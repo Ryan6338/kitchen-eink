@@ -276,124 +276,6 @@ template:
         device_class: problem
 
 script:
-  kitchen_generate_random_four_meals:
-    alias: Kitchen - Generate Four Random Meals
-    description: >-
-      Selects four unique random recipes from Mealie and writes them to the current
-      meal plan.
-    mode: single
-    sequence:
-
-      - action: mealie.get_recipes
-        data:
-          config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
-          result_limit: 1000
-        response_variable: mealie_result
-
-      - variables:
-          recipes: "{{ mealie_result.recipes['items'] }}"
-          used_slugs: []
-
-      - repeat:
-          count: 4
-          sequence:
-
-            - variables:
-                available: >-
-                  {{ recipes
-                    | rejectattr('slug', 'in', used_slugs)
-                    | list }}
-
-            - variables:
-                chosen: "{{ available | random }}"
-
-            - variables:
-                chosen_slug: "{{ chosen['slug'] | string }}"
-                chosen_name: "{{ chosen['name'] | string }}"
-
-            - action: input_text.set_value
-              target:
-                entity_id: "{{ 'input_text.kitchen_meal_' ~ repeat.index }}"
-              data:
-                value: "{{ chosen_name }}"
-
-            - action: input_text.set_value
-              target:
-                entity_id: >-
-                  {{ 'input_text.kitchen_meal_' ~ repeat.index ~ '_slug' }}
-              data:
-                value: "{{ chosen_slug }}"
-
-            - variables:
-                used_slugs: "{{ used_slugs + [chosen_slug] }}"
-
-      - variables:
-          chosen_meals: >-
-            {% set ns = namespace(items=[]) %}
-            {% for slot in range(1, 5) %}
-              {% set ns.items = ns.items + [{
-                'slot': slot,
-                'day': states('input_select.kitchen_meal_day_' ~ slot),
-                'slug': states('input_text.kitchen_meal_' ~ slot ~ '_slug'),
-                'name': states('input_text.kitchen_meal_' ~ slot),
-                'number': 0,
-                'servings':
-                  states('input_number.kitchen_servings') | int(4)
-                  + states('input_number.kitchen_extra_guests') | int(0)
-              }] %}
-            {% endfor %}
-            {{ ns.items }}
-
-      - action: input_text.set_value
-        target:
-          entity_id: input_text.kitchen_meal_plan
-        data:
-          value: "{{ chosen_meals | to_json }}"
-
-      - action: input_select.select_option
-        target:
-          entity_id: input_select.kitchen_display_page
-        data:
-          option: meal_planner
-
-      - action: persistent_notification.create
-        data:
-          title: Four random meals generated
-          message: >-
-            {{ chosen_meals | map(attribute='name') | join(', ') }}
-
-
-kitchen_test_meal_slot_labels:
-  alias: Kitchen - Test Meal Slot Labels
-  description: >-
-    Writes fixed test names to the meal helpers to verify display assignment.
-  mode: single
-  sequence:
-
-    - repeat:
-        for_each: "{{ range(1, 5) | list }}"
-        sequence:
-
-          - action: input_text.set_value
-            target:
-              entity_id: "{{ 'input_text.kitchen_meal_' ~ repeat.item }}"
-            data:
-              value: "TEST RECIPE SLOT {{ repeat.item }}"
-
-          - action: input_text.set_value
-            target:
-              entity_id: >-
-                {{ 'input_text.kitchen_meal_' ~ repeat.item ~ '_slug' }}
-            data:
-              value: "test-recipe-slot-{{ repeat.item }}"
-
-    - action: persistent_notification.create
-      data:
-        title: Meal slot label test
-        message: >-
-          Test names were written to meal slots 1-4.
-
-
   kitchen_test_meal_slot_labels:
     alias: Kitchen - Test Meal Slot Labels
     description: >-
@@ -443,57 +325,6 @@ kitchen_test_meal_slot_labels:
           title: Meal slot label test
           message: Test names were written to meal slots 1-4.
 
-  kitchen_randomise_editor_meals:
-    alias: Kitchen - Populate unlocked editor meals from Mealie
-    mode: single
-    sequence:
-      - action: persistent_notification.create
-        data:
-          title: Kitchen randomiser started
-          message: The kitchen display requested a meal randomisation.
-      - action: mealie.get_recipes
-        data:
-          config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
-          result_limit: 1000
-        response_variable: mealie_result
-      - variables:
-          recipes: "{{ mealie_result.recipes | default(mealie_result, true) }}"
-      - repeat:
-          for_each: "{{ range(1, states('input_number.kitchen_meals_this_week') | int(4) + 1) | list }}"
-          sequence:
-            - if:
-                - condition: template
-                  value_template: "{{ is_state('input_boolean.kitchen_meal_lock_' ~ repeat.item, 'off') }}"
-              then:
-                - variables:
-                    chosen: "{{ recipes | random if recipes else {} }}"
-                - action: input_text.set_value
-                  target:
-                    entity_id: "{{ 'input_text.kitchen_meal_' ~ repeat.item }}"
-                  data:
-                    value: "{{ chosen.name | default('Unassigned recipe') }}"
-                - action: input_text.set_value
-                  target:
-                    entity_id: "{{ 'input_text.kitchen_meal_' ~ repeat.item ~ '_slug' }}"
-                  data:
-                    value: "{{ chosen.slug | default(chosen.id, true) | default(chosen.recipe_id, true) }}"
-      - action: input_text.set_value
-        target:
-          entity_id: input_text.kitchen_meal_plan
-        data:
-          value: >-
-            {% set ns = namespace(items=[]) %}
-            {% for n in range(1, states('input_number.kitchen_meals_this_week') | int(4) + 1) %}
-              {% set ns.items = ns.items + [{'slot': n, 'day': states('input_select.kitchen_meal_day_' ~ n), 'slug': states('input_text.kitchen_meal_' ~ n ~ '_slug'), 'name': states('input_text.kitchen_meal_' ~ n), 'number': 0, 'servings': states('input_number.kitchen_servings') | int(4) + states('input_number.kitchen_extra_guests') | int(0)}] %}
-            {% endfor %}
-            {{ ns.items | to_json }}
-      - action: persistent_notification.create
-        data:
-          title: Meal plan updated
-          message: >-
-            Randomiser received {{ recipes | count }} recipes from Mealie and
-            populated unlocked meal slots.
-
   kitchen_show_meal_planner:
     alias: Kitchen - Show Meal Planner On Display
     mode: restart
@@ -502,22 +333,174 @@ kitchen_test_meal_slot_labels:
         target: {entity_id: input_select.kitchen_display_page}
         data: {option: meal_planner}
 
-  kitchen_randomise_four_meals:
-    alias: Kitchen - Randomise Four Meals Using Original Generator
-    description: Uses the original meal randomiser with four active weekly slots.
+  kitchen_generate_four_meals_from_mealie:
+    alias: Kitchen - Generate Four Meals From Mealie
+    description: Generate four temporary Mealie dinners and copy them to the kitchen cards.
     mode: single
     sequence:
-      - action: input_number.set_value
-        target:
-          entity_id: input_number.kitchen_meals_this_week
+      - action: mealie.set_random_mealplan
         data:
-          value: 4
-      - action: script.kitchen_randomise_meals
+          config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+          date: "2099-01-01"
+          entry_type: dinner
+        response_variable: meal_1
+      - action: mealie.set_random_mealplan
+        data:
+          config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+          date: "2099-01-02"
+          entry_type: dinner
+        response_variable: meal_2
+      - action: mealie.set_random_mealplan
+        data:
+          config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+          date: "2099-01-03"
+          entry_type: dinner
+        response_variable: meal_3
+      - action: mealie.set_random_mealplan
+        data:
+          config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+          date: "2099-01-04"
+          entry_type: dinner
+        response_variable: meal_4
+      - variables:
+          meal_1_name: "{{ meal_1.recipe.name | default('Unassigned recipe') }}"
+          meal_2_name: "{{ meal_2.recipe.name | default('Unassigned recipe') }}"
+          meal_3_name: "{{ meal_3.recipe.name | default('Unassigned recipe') }}"
+          meal_4_name: "{{ meal_4.recipe.name | default('Unassigned recipe') }}"
+          meal_1_slug: "{{ meal_1.recipe.slug | default(meal_1.recipe.id, true) | default('') }}"
+          meal_2_slug: "{{ meal_2.recipe.slug | default(meal_2.recipe.id, true) | default('') }}"
+          meal_3_slug: "{{ meal_3.recipe.slug | default(meal_3.recipe.id, true) | default('') }}"
+          meal_4_slug: "{{ meal_4.recipe.slug | default(meal_4.recipe.id, true) | default('') }}"
+      - repeat:
+          for_each:
+            - {slot: 1, name: "{{ meal_1_name }}", slug: "{{ meal_1_slug }}"}
+            - {slot: 2, name: "{{ meal_2_name }}", slug: "{{ meal_2_slug }}"}
+            - {slot: 3, name: "{{ meal_3_name }}", slug: "{{ meal_3_slug }}"}
+            - {slot: 4, name: "{{ meal_4_name }}", slug: "{{ meal_4_slug }}"}
+          sequence:
+            - action: input_text.set_value
+              target:
+                entity_id: "{{ 'input_text.kitchen_meal_' ~ repeat.item.slot }}"
+              data:
+                value: "{{ repeat.item.name }}"
+            - action: input_text.set_value
+              target:
+                entity_id: "{{ 'input_text.kitchen_meal_' ~ repeat.item.slot ~ '_slug' }}"
+              data:
+                value: "{{ repeat.item.slug }}"
+      - action: input_text.set_value
+        target: {entity_id: input_text.kitchen_meal_plan}
+        data:
+          value: >-
+            {{ [
+              {'slot': 1, 'day': 'Unassigned', 'slug': meal_1_slug, 'name': meal_1_name},
+              {'slot': 2, 'day': 'Unassigned', 'slug': meal_2_slug, 'name': meal_2_name},
+              {'slot': 3, 'day': 'Unassigned', 'slug': meal_3_slug, 'name': meal_3_name},
+              {'slot': 4, 'day': 'Unassigned', 'slug': meal_4_slug, 'name': meal_4_name}
+            ] | to_json }}
+      - repeat:
+          for_each: ["{{ meal_1.id }}", "{{ meal_2.id }}", "{{ meal_3.id }}", "{{ meal_4.id }}"]
+          sequence:
+            - action: mealie.delete_mealplan
+              continue_on_error: true
+              data:
+                config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+                mealplan_id: "{{ repeat.item }}"
       - action: input_select.select_option
-        target:
-          entity_id: input_select.kitchen_display_page
+        target: {entity_id: input_select.kitchen_display_page}
+        data: {option: meal_planner}
+      - action: persistent_notification.create
         data:
-          option: meal_planner
+          title: Four meals generated
+          message: "{{ [meal_1_name, meal_2_name, meal_3_name, meal_4_name] | join(', ') }}"
+
+  kitchen_generate_meal_slot_from_mealie:
+    alias: Kitchen - Generate Meal For Card
+    description: Generate one random Mealie dinner and place it in the selected card.
+    mode: queued
+    fields:
+      slot:
+        required: true
+        selector:
+          number:
+            min: 1
+            max: 4
+            step: 1
+    sequence:
+      - variables:
+          slot_number: "{{ slot | int(1) }}"
+          target_entity: "{{ 'input_text.kitchen_meal_' ~ (slot | int(1)) }}"
+          target_slug_entity: "{{ 'input_text.kitchen_meal_' ~ (slot | int(1)) ~ '_slug' }}"
+          temporary_date: >-
+            {{ (as_datetime('2099-01-01') + timedelta(days=(slot | int(1)) - 1)).strftime('%Y-%m-%d') }}
+      - action: mealie.set_random_mealplan
+        data:
+          config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+          date: "{{ temporary_date }}"
+          entry_type: dinner
+        response_variable: generated_meal
+      - variables:
+          generated_meal_id: >-
+            {% if generated_meal is string %}
+              {% set result = generated_meal | from_json(default={}) %}
+            {% else %}
+              {% set result = generated_meal | default({}, true) %}
+            {% endif %}
+            {{ result['id'] | default('') }}
+      - action: mealie.get_mealplan
+        data:
+          config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+          start_date: "{{ temporary_date }}"
+          end_date: "{{ temporary_date }}"
+        response_variable: meal_plan_result
+      - variables:
+          recipe_name: >-
+            {% set raw_entries = meal_plan_result['mealplan'] | default([], true) %}
+            {% set entries = raw_entries | from_json(default=[]) if raw_entries is string else raw_entries %}
+            {% set dinner = entries | selectattr('entry_type', 'equalto', 'dinner') | list | first | default({}, true) %}
+            {{ dinner['recipe']['name']
+               | default(dinner['title'], true)
+               | default('Unassigned recipe') }}
+          recipe_slug: >-
+            {% set raw_entries = meal_plan_result['mealplan'] | default([], true) %}
+            {% set entries = raw_entries | from_json(default=[]) if raw_entries is string else raw_entries %}
+            {% set dinner = entries | selectattr('entry_type', 'equalto', 'dinner') | list | first | default({}, true) %}
+            {{ dinner['recipe']['slug']
+               | default(dinner['recipe']['id'], true)
+               | default('') }}
+          mealplan_id: >-
+            {% set raw_entries = meal_plan_result['mealplan'] | default([], true) %}
+            {% set entries = raw_entries | from_json(default=[]) if raw_entries is string else raw_entries %}
+            {% set dinner = entries | selectattr('entry_type', 'equalto', 'dinner') | list | first | default({}, true) %}
+            {{ dinner['id'] | default(generated_meal_id, true) }}
+      - action: input_text.set_value
+        target:
+          entity_id: "{{ target_entity }}"
+        data:
+          value: "{{ recipe_name }}"
+      - action: input_text.set_value
+        target:
+          entity_id: "{{ target_slug_entity }}"
+        data:
+          value: "{{ recipe_slug }}"
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.kitchen_meal_plan
+        data:
+          value: >-
+            {% set plan = states('input_text.kitchen_meal_plan') | from_json(default=[]) %}
+            {% set new_meal = {
+              'slot': slot_number,
+              'day': 'Unassigned',
+              'slug': recipe_slug,
+              'name': recipe_name
+            } %}
+            {{ (plan | rejectattr('slot', 'equalto', slot_number) | list + [new_meal]) | sort(attribute='slot') | to_json }}
+      - action: mealie.delete_mealplan
+        continue_on_error: true
+        data:
+          config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+          mealplan_id: "{{ mealplan_id }}"
 
   kitchen_sync_mealie_recipe_numbers:
     alias: Kitchen - Sync Mealie recipe numbers
@@ -548,116 +531,6 @@ kitchen_test_meal_slot_labels:
           entity_id: input_text.kitchen_recipe_number_index
         data:
           value: "{{ new_index | to_json }}"
-
-  kitchen_randomise_meals:
-    alias: Kitchen - Randomise unlocked meals
-    description: >-
-      Creates a duplicate-free plan from Mealie. Locked slots are preserved;
-      seasonal ingredients and include/exclude preferences are applied first.
-    mode: single
-    fields:
-      replace_slot:
-        name: Slot to replace
-        description: Optional slot number 1-7. Leave empty to randomise all unlocked slots.
-        required: false
-        selector:
-          number:
-            min: 1
-            max: 7
-            mode: box
-    sequence:
-      - action: mealie.get_recipes
-        data:
-          config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
-          result_limit: 1000
-        response_variable: mealie_result
-      - variables:
-          recipes: "{{ mealie_result.recipes | default(mealie_result, true) }}"
-          old_plan: "{{ states('input_text.kitchen_meal_plan') | from_json(default=[]) }}"
-          old_history: "{{ states('input_text.kitchen_meal_history') | from_json(default=[]) }}"
-          index: "{{ states('input_text.kitchen_recipe_number_index') | from_json(default={}) }}"
-          seasonal: "{{ states('input_text.kitchen_seasonal_ingredients').lower().split(',') | map('trim') | reject('equalto','') | list }}"
-          includes: "{{ states('input_text.kitchen_include_ingredients').lower().split(',') | map('trim') | reject('equalto','') | list }}"
-          excludes: "{{ states('input_text.kitchen_exclude_ingredients').lower().split(',') | map('trim') | reject('equalto','') | list }}"
-          recent: "{{ old_history[-12:] | map(attribute='slug') | list }}"
-          specials: >-
-            {{ state_attr('sensor.woolworths_specials', 'ingredient_terms')
-               | default(states('input_text.kitchen_woolworths_specials').lower().split(','), true)
-               | map('trim') | reject('equalto', '') | list }}
-      - variables:
-          plan: >-
-            {% set ns = namespace(result=[], used=[], used_tags=[], recipes=recipes) %}
-            {% for n in range(1, 8) %}
-              {% set current = old_plan | selectattr('slot', 'equalto', n) | list | first | default({}, true) %}
-              {% set locked = is_state('input_boolean.kitchen_meal_lock_' ~ n, 'on') %}
-              {% set day = states('input_select.kitchen_meal_day_' ~ n) %}
-              {% if n <= states('input_number.kitchen_meals_this_week') | int(5) and locked and current.slug is defined and (not replace_slot or replace_slot | int != n) %}
-                {% set chosen = current %}
-              {% elif n <= states('input_number.kitchen_meals_this_week') | int(5) and (not replace_slot or replace_slot | int == n or not locked) %}
-                {% set candidates = namespace(items=[]) %}
-                {% for recipe in ns.recipes %}
-                  {% set slug = recipe.slug | default(recipe.id, true) | string %}
-                  {% set tags = recipe.tags | default([]) %}
-                  {% set text = (recipe.name | default('') ~ ' ' ~ recipe.description | default('') ~ ' ' ~ tags | join(' ')).lower() %}
-                  {% set seasonal_hit = (seasonal | select('in', text) | list | count) > 0 %}
-                  {% set include_hit = not includes or (includes | select('in', text) | list | count) > 0 %}
-                  {% set excluded = (excludes | select('in', text) | list | count) > 0 %}
-                  {% if slug not in ns.used and not excluded and include_hit and (seasonal_hit or not seasonal) %}
-                    {% set special_score = (specials | select('in', text) | list | count * 4) if is_state('input_boolean.kitchen_use_woolworths_specials', 'on') else 0 %}
-                    {% set health_terms = ['vegetable', 'legume', 'bean', 'lentil', 'wholegrain', 'whole grain', 'salad', 'grilled', 'baked', 'lean'] %}
-                    {% set health_score = (health_terms | select('in', text) | list | count * 2) if is_state('input_boolean.kitchen_favour_healthier_recipes', 'on') else 0 %}
-                    {% set variety_penalty = (tags | select('in', ns.used_tags) | list | count) %}
-                    {% set candidates.items = candidates.items + [recipe | combine({'_planner_score': special_score + health_score - variety_penalty})] %}
-                  {% endif %}
-                {% endfor %}
-                {% if not candidates.items %}
-                  {% set candidates.items = ns.recipes
-                    | rejectattr('slug', 'in', ns.used)
-                    | map('combine', {'_planner_score': 0})
-                    | list %}
-                {% endif %}
-                {% set fresh_candidates = candidates.items | rejectattr('slug', 'in', recent) | list %}
-                {% set ranked_pool = fresh_candidates if fresh_candidates else candidates.items %}
-                {% set best_score = ranked_pool | map(attribute='_planner_score') | map('int') | list | max(default=0) %}
-                {% set best_candidates = ranked_pool | selectattr('_planner_score', 'equalto', best_score) | list %}
-                {% set chosen_raw = (best_candidates if best_candidates else ranked_pool) | random if ranked_pool else {} %}
-                {% set chosen = {
-                  'slot': n,
-                  'day': day,
-                  'slug': chosen_raw.slug | default(chosen_raw.id, true),
-                  'name': chosen_raw.name | default('Unassigned recipe'),
-                  'number': index[chosen_raw.slug | default(chosen_raw.id, true) | string] | default(0) | int,
-                  'servings': states('input_number.kitchen_servings') | int(4) + states('input_number.kitchen_extra_guests') | int(0),
-                  'tags': chosen_raw.tags | default([])
-                } %}
-              {% else %}
-                {% set chosen = {'slot': n, 'day': day} %}
-              {% endif %}
-              {% if chosen.slug is defined and chosen.slug %}{% set ns.used = ns.used + [chosen.slug] %}{% endif %}
-              {% if chosen.tags is defined %}{% set ns.used_tags = ns.used_tags + chosen.tags %}{% endif %}
-              {% set ns.result = ns.result + [chosen] %}
-            {% endfor %}
-            {{ ns.result }}
-      - action: input_text.set_value
-        target:
-          entity_id: input_text.kitchen_meal_plan
-        data:
-          value: "{{ plan | to_json }}"
-      - repeat:
-          for_each: "{{ range(1, states('input_number.kitchen_meals_this_week') | int(4) + 1) | list }}"
-          sequence:
-            - variables:
-                meal: "{{ plan | selectattr('slot', 'equalto', repeat.item) | list | first | default({}, true) }}"
-            - action: input_text.set_value
-              target:
-                entity_id: "{{ 'input_text.kitchen_meal_' ~ repeat.item }}"
-              data:
-                value: "{{ meal.name | default('Unassigned') }}"
-      - action: persistent_notification.create
-        data:
-          title: Meal plan updated
-          message: >-
-            {{ plan | selectattr('slug', 'defined') | map(attribute='name') | list | join(', ') }}
 
   kitchen_add_meal_slot:
     alias: Kitchen - Add Meal Slot
@@ -707,24 +580,6 @@ kitchen_test_meal_slot_labels:
         target:
           entity_id: "{{ 'input_boolean.kitchen_meal_lock_' ~ slot | int }}"
 
-  kitchen_replace_meal:
-    alias: Kitchen - Replace one meal randomly
-    mode: queued
-    fields:
-      slot:
-        required: true
-        selector:
-          number: {min: 1, max: 7, mode: box}
-    sequence:
-      - if:
-          - condition: template
-            value_template: "{{ is_state('input_boolean.kitchen_meal_lock_' ~ (slot | int), 'off') }}"
-        then:
-          - action: script.kitchen_randomise_meals
-            data:
-              replace_slot: "{{ slot }}"
-        else:
-          - stop: Meal slot is locked; leave it unchanged
 
   kitchen_search_replacement:
     alias: Kitchen - Search Mealie replacement
@@ -1218,29 +1073,15 @@ automation:
         data:
           value: "{{ state_attr('sensor.woolworths_specials', 'ingredient_terms') | join(', ') }}"
 
-  - id: kitchen_meal_plan_weekly_proposal
-    alias: Kitchen - Weekly meal plan proposal
-    description: Creates a proposal for review; it does not auto-commit a plan.
-    trigger:
-      - platform: time
-        at: "09:00:00"
-    condition:
-      - condition: time
-        weekday: [sun]
-    action:
-      - action: script.kitchen_randomise_meals
-      - action: persistent_notification.create
-        data:
-          title: Weekly meal plan proposal ready
-          message: Review the Kitchen weekly meal plan sensor and approve it before shopping.
 
 intent_script:
-  RandomiseKitchenMeals:
-    description: Generate four random recipes for this week's meal plan.
+
+  GenerateKitchenMealPlan:
+    description: Generate four dinner recipes using Mealie's random meal-plan action.
     action:
-      - action: script.kitchen_randomise_four_meals
+      - action: script.kitchen_generate_four_meals_from_mealie
     speech:
-      text: "I randomised four meals for this week's plan."
+      text: "I generated four meals from Mealie."
 
   OpenKitchenMealPlanner:
     description: Open the meal planner on the kitchen display.

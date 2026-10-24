@@ -2,19 +2,19 @@
 
 - lvgl.label.update:
     id: meal_card_1_caption
-    text: !lambda 'return id(meal_card_1_title).state == "unknown" ? "Unassigned recipe" : id(meal_card_1_title).state;'
+    text: !lambda 'return id(meal_card_1_title).state.empty() || id(meal_card_1_title).state == "unknown" || id(meal_card_1_title).state == "unavailable" ? "Unassigned recipe" : id(meal_card_1_title).state;'
 
 - lvgl.label.update:
     id: meal_card_2_caption
-    text: !lambda 'return id(meal_card_2_title).state == "unknown" ? "Unassigned recipe" : id(meal_card_2_title).state;'
+    text: !lambda 'return id(meal_card_2_title).state.empty() || id(meal_card_2_title).state == "unknown" || id(meal_card_2_title).state == "unavailable" ? "Unassigned recipe" : id(meal_card_2_title).state;'
 
 - lvgl.label.update:
     id: meal_card_3_caption
-    text: !lambda 'return id(meal_card_3_title).state == "unknown" ? "Unassigned recipe" : id(meal_card_3_title).state;'
+    text: !lambda 'return id(meal_card_3_title).state.empty() || id(meal_card_3_title).state == "unknown" || id(meal_card_3_title).state == "unavailable" ? "Unassigned recipe" : id(meal_card_3_title).state;'
 
 - lvgl.label.update:
     id: meal_card_4_caption
-    text: !lambda 'return id(meal_card_4_title).state == "unknown" ? "Unassigned recipe" : id(meal_card_4_title).state;'
+    text: !lambda 'return id(meal_card_4_title).state.empty() || id(meal_card_4_title).state == "unknown" || id(meal_card_4_title).state == "unavailable" ? "Unassigned recipe" : id(meal_card_4_title).state;'
 
 - if:
 

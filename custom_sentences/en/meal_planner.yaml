@@ -1,5 +1,13 @@
 language: en
 intents:
+  GenerateKitchenMealPlan:
+    data:
+      - sentences:
+          - "generate my meal plan"
+          - "generate four meals"
+          - "generate four dinners"
+          - "plan four dinners"
+          - "make me a meal plan"
   OpenKitchenMealPlanner:
     data:
       - sentences:
@@ -40,15 +48,7 @@ intents:
           - "add {item} to my list"
           - "add {item} to the household list"
           - "put {item} on my list"
-  RandomiseKitchenMeals:
-    data:
-      - sentences:
-          - "randomise meals"
-          - "randomize meals"
-          - "shuffle my meals"
-          - "shuffle my meal plan"
-          - "randomise my meal plan"
-          - "randomize my meal plan"
+
 
 lists:
   ingredient:
