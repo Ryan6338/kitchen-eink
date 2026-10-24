@@ -55,3 +55,17 @@ them immediately.
 `just check` performs fast source validation. ESPHome's full device validation
 should use the Device Builder version installed on Home Assistant; an older
 local ESPHome may reject newer LVGL options such as `bottom_layer`.
+
+## Simulator
+
+Install the simulator toolchain and its pinned ESPHome version, then run it:
+
+```sh
+just setup-simulator
+just simulator
+```
+
+The setup command supports Debian/Ubuntu and macOS. It installs SDL2, libsodium,
+the native build tools, and a project-local Python environment. macOS requires
+Homebrew; if the Xcode Command Line Tools are missing, setup opens their
+installer and asks you to rerun the command after installation completes.

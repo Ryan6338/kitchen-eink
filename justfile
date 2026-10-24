@@ -2,6 +2,7 @@ set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 
 ha_host := env_var_or_default("HA_HOST", "root@192.168.68.200")
 ha_key := env_var_or_default("HA_SSH_KEY", env_var("HOME") + "/.ssh/home_assistant_deploy_ed25519")
+simulator_esphome := ".venv/bin/esphome"
 
 # Show the available project commands.
 default:
@@ -10,6 +11,15 @@ default:
 # Validate all local YAML, JSON, and Python files.
 check:
     @python3 tools/validate.py
+
+# Install the simulator's native and Python dependencies.
+setup-simulator:
+    @tools/setup-simulator.sh
+
+# Build and run the kitchen display simulator (run setup-simulator first).
+simulator *args:
+    @test -x '{{simulator_esphome}}' || { echo 'Simulator dependencies are missing; run `just setup-simulator` first.' >&2; exit 1; }
+    @'{{simulator_esphome}}' run esphome/kitchen-display-simulator.yaml {{args}}
 
 # Deploy everything and restart Home Assistant after a successful config check.
 deploy: check

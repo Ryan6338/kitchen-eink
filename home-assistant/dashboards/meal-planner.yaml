@@ -11,6 +11,22 @@ views:
           - type: heading
             heading: This week's meals
             icon: mdi:calendar-week
+          - type: entities
+            title: Generator preferences
+            entities:
+              - entity: input_text.kitchen_use_up_ingredients
+                name: Pantry/fridge ingredients to use up
+              - entity: input_text.kitchen_seasonal_ingredients
+                name: Seasonal ingredients
+              - entity: input_boolean.kitchen_use_woolworths_specials
+                name: Favour ingredients on special
+          - type: button
+            name: Generate balanced 4-meal plan
+            icon: mdi:dice-multiple
+            show_state: false
+            tap_action:
+              action: call-service
+              service: script.kitchen_generate_four_meals_from_mealie
           - type: conditional
             conditions:
               - entity: sensor.kitchen_next_week_selection_due
@@ -40,36 +56,28 @@ views:
               cards:
                 - type: button
                   entity: input_text.kitchen_meal_1
-                  name: Meal 1 — tap to randomise
+                  name: Meal 1
                   show_state: true
                   tap_action:
-                    action: call-service
-                    service: script.kitchen_generate_meal_slot_from_mealie
-                    data: {slot: 1}
+                    action: none
                 - type: button
                   entity: input_text.kitchen_meal_2
-                  name: Meal 2 — tap to randomise
+                  name: Meal 2
                   show_state: true
                   tap_action:
-                    action: call-service
-                    service: script.kitchen_generate_meal_slot_from_mealie
-                    data: {slot: 2}
+                    action: none
                 - type: button
                   entity: input_text.kitchen_meal_3
-                  name: Meal 3 — tap to randomise
+                  name: Meal 3
                   show_state: true
                   tap_action:
-                    action: call-service
-                    service: script.kitchen_generate_meal_slot_from_mealie
-                    data: {slot: 3}
+                    action: none
                 - type: button
                   entity: input_text.kitchen_meal_4
-                  name: Meal 4 — tap to randomise
+                  name: Meal 4
                   show_state: true
                   tap_action:
-                    action: call-service
-                    service: script.kitchen_generate_meal_slot_from_mealie
-                    data: {slot: 4}
+                    action: none
           - type: conditional
             conditions:
               - entity: input_boolean.kitchen_next_week_selection_active

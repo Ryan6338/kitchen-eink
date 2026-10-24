@@ -1,0 +1,2 @@
+# Keep simulator builds aligned with the ESPHome release used by this project.
+esphome==2026.10.0
