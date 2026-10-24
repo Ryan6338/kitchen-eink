@@ -1,5 +1,9 @@
-# Gitignore settings for ESPHome
-# This is an example and may include too much for your use-case.
-# You can modify this file to suit your needs.
+# Local and generated files
+.DS_Store
+**/.DS_Store
 /.esphome/
-/secrets.yaml
+/build/
+
+# Secrets must live only in Home Assistant/ESPHome.
+secrets.yaml
+**/secrets.yaml

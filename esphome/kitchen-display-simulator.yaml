@@ -12,7 +12,7 @@ logger:
 
 api:
 
-<<: !include kitchen-common.yaml
+<<: !include includes/kitchen-common.yaml
 
 
 # ---------------------------------------------------------------
