@@ -61,10 +61,10 @@ UniqueKeyLoader.add_constructor(None, _construct_custom_tag)
 
 
 def validate_yaml() -> None:
-    files = sorted(ROOT.rglob("*.yaml"))
+    files = sorted(
+        path for path in ROOT.rglob("*.yaml") if ".esphome" not in path.parts
+    )
     for path in files:
-        if ".esphome" in path.parts:
-            continue
         try:
             list(
                 yaml.load_all(
@@ -77,7 +77,9 @@ def validate_yaml() -> None:
 
 
 def validate_json() -> None:
-    files = sorted(ROOT.rglob("*.json"))
+    files = sorted(
+        path for path in ROOT.rglob("*.json") if ".esphome" not in path.parts
+    )
     for path in files:
         json.loads(path.read_text(encoding="utf-8"))
     print(f"JSON syntax: {len(files)} files OK")
