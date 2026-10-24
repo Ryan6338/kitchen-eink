@@ -1,0 +1,31 @@
+substitutions:
+  office_connection_status: SDL simulator
+  office_network_status: 800 x 480 desktop preview
+
+esphome:
+  name: evie-office-display-simulator
+  friendly_name: Evie Office Display Simulator
+  min_version: 2026.10.0
+
+host:
+  mac_address: "02:45:56:49:45:01"
+
+logger:
+
+api:
+
+<<: !include includes/evie-office-common.yaml
+
+display:
+  - platform: sdl
+    id: main_display
+    dimensions:
+      width: 800
+      height: 480
+    update_interval: never
+    auto_clear_enabled: false
+
+touchscreen:
+  - platform: sdl
+    id: main_touchscreen
+    display: main_display

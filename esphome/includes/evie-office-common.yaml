@@ -1,0 +1,30 @@
+time:
+  - platform: homeassistant
+    id: home_assistant_time
+    on_time_sync:
+      then:
+        - script.execute: update_office_clock
+    on_time:
+      - seconds: 0
+        minutes: /1
+        then:
+          - script.execute: update_office_clock
+
+script:
+  - id: update_office_clock
+    mode: restart
+    then:
+      - lvgl.label.update:
+          id: office_clock
+          text: !lambda |-
+            const auto now = id(home_assistant_time).now();
+            if (!now.is_valid()) return std::string("--:--");
+            return now.strftime("%H:%M");
+      - lvgl.label.update:
+          id: office_date
+          text: !lambda |-
+            const auto now = id(home_assistant_time).now();
+            if (!now.is_valid()) return std::string("Waiting for Home Assistant");
+            return now.strftime("%A, %d %B");
+
+lvgl: !include evie-office-lvgl.yaml

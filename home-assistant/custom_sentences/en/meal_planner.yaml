@@ -4,6 +4,7 @@ intents:
     data:
       - sentences:
           - "generate my meal plan"
+          - "generate dinners"
           - "generate four meals"
           - "generate four dinners"
           - "plan four dinners"

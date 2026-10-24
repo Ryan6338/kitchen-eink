@@ -1,12 +1,16 @@
-# Kitchen display configuration
+# ESPHome display and Home Assistant configuration
 
-This repository keeps the kitchen display's ESPHome and Home Assistant sources
-separate and deploys them over SSH with `just`.
+This repository keeps the kitchen and office display ESPHome sources separate
+from the Home Assistant configuration and deploys them over SSH with `just`.
 
 ## Layout
 
-- `esphome/` contains only the two real device entry points at its root, so the
-  ESPHome dashboard does not show supporting files as devices.
+- `esphome/` contains only device and simulator entry points at its root, so
+  the ESPHome dashboard does not show supporting files as devices.
+- `esphome/evie-office-display.yaml` is the standalone 800×480 configuration
+  for the Guition JC8048W550 / ESP32-8048S050C_I office display. It requires
+  ESPHome 2026.5.0 or newer and includes a clock, network status, dimmable
+  backlight, and on-screen touch test.
 - `esphome/includes/` contains shared LVGL, refresh, and rendering YAML.
 - `esphome/assets/` contains fonts and images.
 - `home-assistant/packages/` contains Home Assistant packages.
@@ -14,6 +18,13 @@ separate and deploys them over SSH with `just`.
   deployment these are assembled into `/config/packages/kitchen_scripts.yaml`.
 - `home-assistant/custom_components/`, `custom_sentences/`, and `dashboards/`
   mirror their remote `/config` destinations.
+
+The balanced meal-selection engine lives in
+`home-assistant/custom_components/kitchen_meal_planner/`. Home Assistant YAML
+keeps only thin compatibility scripts for the dashboard and ESPHome display;
+filtering, full-recipe ingredient scoring, caching, and diagnostics are handled
+in testable Python. Shopping-list writes are also batched there so Mealie is
+refreshed once per generated list rather than once per ingredient.
 
 ## Deploy
 
@@ -63,6 +74,8 @@ Install the simulator toolchain and its pinned ESPHome version, then run it:
 ```sh
 just setup-simulator
 just simulator
+just evie-simulator-build
+just evie-simulator
 ```
 
 The setup command supports Debian/Ubuntu and macOS. It installs SDL2, libsodium,

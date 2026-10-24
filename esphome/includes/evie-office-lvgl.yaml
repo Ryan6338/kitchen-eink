@@ -1,0 +1,87 @@
+id: office_ui
+displays:
+  - main_display
+touchscreens:
+  - main_touchscreen
+buffer_size: 25%
+scrollbar_mode: "OFF"
+pages:
+  - id: office_home
+    bg_color: 0x0B1220
+    scrollbar_mode: "OFF"
+    scrollable: false
+    widgets:
+      - obj:
+          x: 24
+          y: 24
+          width: 752
+          height: 432
+          radius: 24
+          bg_color: 0x111C2E
+          border_color: 0x263650
+          border_width: 2
+          pad_all: 0
+          widgets:
+            - label:
+                x: 28
+                y: 24
+                text: "EVIE'S OFFICE"
+                text_font: montserrat_24
+                text_color: 0x76E4F7
+            - label:
+                id: wifi_status
+                x: 500
+                y: 28
+                width: 220
+                text: "${office_connection_status}"
+                text_align: RIGHT
+                text_font: montserrat_16
+                text_color: 0x9FB0C8
+            - label:
+                id: office_clock
+                align: CENTER
+                y: -42
+                text: "--:--"
+                text_font: montserrat_48
+                text_color: 0xF8FAFC
+            - label:
+                id: office_date
+                align: CENTER
+                y: 22
+                text: "Waiting for Home Assistant"
+                text_font: montserrat_20
+                text_color: 0x9FB0C8
+            - button:
+                id: touch_test
+                x: 186
+                y: 286
+                width: 380
+                height: 72
+                radius: 18
+                bg_color: 0x2563EB
+                pressed:
+                  bg_color: 0x1D4ED8
+                widgets:
+                  - label:
+                      id: touch_test_label
+                      align: CENTER
+                      text: "Touch test"
+                      text_font: montserrat_24
+                      text_color: 0xFFFFFF
+                on_press:
+                  - lvgl.label.update:
+                      id: touch_test_label
+                      text: "Touch working"
+                on_release:
+                  - lvgl.label.update:
+                      id: touch_test_label
+                      text: "Touch test"
+            - label:
+                id: ip_status
+                x: 28
+                y: 389
+                width: 696
+                text: "${office_network_status}"
+                text_align: CENTER
+                text_font: montserrat_14
+                text_color: 0x70819A

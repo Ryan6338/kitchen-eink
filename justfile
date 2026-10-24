@@ -21,6 +21,16 @@ simulator *args:
     @test -x '{{simulator_esphome}}' || { echo 'Simulator dependencies are missing; run `just setup-simulator` first.' >&2; exit 1; }
     @'{{simulator_esphome}}' run esphome/kitchen-display-simulator.yaml {{args}}
 
+# Build the Evie office display desktop simulator without launching it.
+evie-simulator-build:
+    @test -x '{{simulator_esphome}}' || { echo 'Simulator dependencies are missing; run `just setup-simulator` first.' >&2; exit 1; }
+    @'{{simulator_esphome}}' compile esphome/evie-office-display-simulator.yaml
+
+# Build and run the Evie office display desktop simulator.
+evie-simulator *args:
+    @test -x '{{simulator_esphome}}' || { echo 'Simulator dependencies are missing; run `just setup-simulator` first.' >&2; exit 1; }
+    @'{{simulator_esphome}}' run esphome/evie-office-display-simulator.yaml {{args}}
+
 # Deploy everything and restart Home Assistant after a successful config check.
 deploy: check
     @HA_HOST='{{ha_host}}' HA_SSH_KEY='{{ha_key}}' tools/deploy.sh all

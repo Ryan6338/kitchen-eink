@@ -43,7 +43,7 @@ echo "Checking SSH access to $ha_host..."
 run_remote 'test -d /config'
 
 echo "Creating remote backup at $backup_dir..."
-run_remote "backup_dir='$backup_dir'; mkdir -p \"\$backup_dir\"; cd /config; for path in packages/kitchen_recipes.yaml packages/meal_planner.yaml packages/weather.yaml packages/kitchen_scripts.yaml scripts.yaml custom_components/woolworths_specials custom_sentences/en/meal_planner.yaml dashboards/meal-planner.yaml esphome/kitchen-display.yaml esphome/kitchen-display-simulator.yaml esphome/kitchen-simulator.yaml esphome/kitchen-common.yaml esphome/kitchen-lvgl.yaml esphome/kitchen-lvgl-refresh.yaml esphome/kitchen-render.yaml esphome/includes esphome/assets; do if [ -e \"\$path\" ]; then mkdir -p \"\$backup_dir/\$(dirname \"\$path\")\"; cp -a \"\$path\" \"\$backup_dir/\$path\"; else printf '%s\\n' \"\$path\" >> \"\$backup_dir/absent\"; fi; done"
+run_remote "backup_dir='$backup_dir'; mkdir -p \"\$backup_dir\"; cd /config; for path in packages/kitchen_recipes.yaml packages/meal_planner.yaml packages/weather.yaml packages/kitchen_scripts.yaml scripts.yaml custom_components/kitchen_meal_planner custom_components/woolworths_specials custom_sentences/en/meal_planner.yaml dashboards/meal-planner.yaml esphome/evie-office-display.yaml esphome/evie-office-display-simulator.yaml esphome/kitchen-display.yaml esphome/kitchen-display-simulator.yaml esphome/kitchen-simulator.yaml esphome/kitchen-common.yaml esphome/kitchen-lvgl.yaml esphome/kitchen-lvgl-refresh.yaml esphome/kitchen-render.yaml esphome/includes esphome/assets; do if [ -e \"\$path\" ]; then mkdir -p \"\$backup_dir/\$(dirname \"\$path\")\"; cp -a \"\$path\" \"\$backup_dir/\$path\"; else printf '%s\\n' \"\$path\" >> \"\$backup_dir/absent\"; fi; done"
 
 if [[ "$mode" == "all" || "$mode" == "esphome" ]]; then
   echo "Deploying ESPHome device configs, includes, and assets..."
@@ -72,7 +72,7 @@ if [[ "$mode" == "all" || "$mode" == "home-assistant" ]]; then
   echo "Running Home Assistant configuration check..."
   if ! run_remote 'ha core check'; then
     echo "Configuration check failed; restoring Home Assistant files from $backup_dir..." >&2
-    run_remote "backup_dir='$backup_dir'; cd /config; for path in packages/kitchen_recipes.yaml packages/meal_planner.yaml packages/weather.yaml packages/kitchen_scripts.yaml scripts.yaml custom_components/woolworths_specials custom_sentences/en/meal_planner.yaml dashboards/meal-planner.yaml; do rm -rf \"/config/\$path\"; if [ -e \"\$backup_dir/\$path\" ]; then mkdir -p \"/config/\$(dirname \"\$path\")\"; cp -a \"\$backup_dir/\$path\" \"/config/\$path\"; fi; done"
+    run_remote "backup_dir='$backup_dir'; cd /config; for path in packages/kitchen_recipes.yaml packages/meal_planner.yaml packages/weather.yaml packages/kitchen_scripts.yaml scripts.yaml custom_components/kitchen_meal_planner custom_components/woolworths_specials custom_sentences/en/meal_planner.yaml dashboards/meal-planner.yaml; do rm -rf \"/config/\$path\"; if [ -e \"\$backup_dir/\$path\" ]; then mkdir -p \"/config/\$(dirname \"\$path\")\"; cp -a \"\$backup_dir/\$path\" \"/config/\$path\"; fi; done"
     exit 1
   fi
 

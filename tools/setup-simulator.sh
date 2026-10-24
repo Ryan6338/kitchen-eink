@@ -88,4 +88,4 @@ uv pip install --python "$repo_dir/.venv/bin/python" \
   --requirement "$repo_dir/requirements-simulator.txt"
 
 "$repo_dir/.venv/bin/esphome" version
-echo "Simulator dependencies are ready. Run: just simulator"
+echo "Simulator dependencies are ready. Run: just simulator or just evie-simulator"

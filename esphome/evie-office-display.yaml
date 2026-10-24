@@ -1,0 +1,116 @@
+# Guition JC8048W550 / ESP32-8048S050C_I
+# 5-inch 800x480 IPS display, ESP32-S3 N16R8 and GT911 capacitive touch.
+# Product: https://www.aliexpress.com/item/1005007609869737.html
+
+substitutions:
+  office_connection_status: Wi-Fi connecting
+  office_network_status: IP waiting
+
+esphome:
+  name: evie-office-display
+  friendly_name: Evie Office Display
+  min_version: 2026.5.0
+  project:
+    name: kitchen_eink.evie_office_display
+    version: 1.0.0
+  on_boot:
+    priority: -100
+    then:
+      - light.turn_on:
+          id: display_backlight
+          brightness: 100%
+      - script.execute: update_office_clock
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: ESP32S3
+  flash_size: 16MB
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_COMPILER_OPTIMIZATION_PERF: "y"
+      CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
+      CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
+      CONFIG_ESPTOOLPY_FLASHSIZE_16MB: "y"
+      CONFIG_SPIRAM_FETCH_INSTRUCTIONS: "y"
+      CONFIG_SPIRAM_RODATA: "y"
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+logger:
+
+api:
+
+<<: !include includes/evie-office-common.yaml
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+
+i2c:
+  id: touch_i2c
+  sda: GPIO19
+  scl: GPIO20
+  frequency: 400kHz
+  scan: true
+
+output:
+  - platform: ledc
+    id: backlight_pwm
+    pin: GPIO2
+    frequency: 1220Hz
+
+light:
+  - platform: monochromatic
+    id: display_backlight
+    name: Evie Office Display Backlight
+    output: backlight_pwm
+    restore_mode: ALWAYS_ON
+
+display:
+  - platform: mipi_rgb
+    model: ESP32-8048S050
+    id: main_display
+    update_interval: never
+    auto_clear_enabled: false
+
+touchscreen:
+  - platform: gt911
+    id: main_touchscreen
+    display: main_display
+    i2c_id: touch_i2c
+    address: 0x5D
+    reset_pin: GPIO38
+    update_interval: 16ms
+
+sensor:
+  - platform: wifi_signal
+    id: office_wifi_signal
+    name: Evie Office Display Wi-Fi Signal
+    update_interval: 30s
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: wifi_status
+            text:
+              format: "Wi-Fi %.0f dBm"
+              args: [x]
+  - platform: uptime
+    name: Evie Office Display Uptime
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      id: office_ip_address
+      name: Evie Office Display IP Address
+      on_value:
+        then:
+          - lvgl.label.update:
+              id: ip_status
+              text: !lambda 'return "IP " + x;'

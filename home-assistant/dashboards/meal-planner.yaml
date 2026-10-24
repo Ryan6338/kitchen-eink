@@ -11,157 +11,163 @@ views:
           - type: heading
             heading: This week's meals
             icon: mdi:calendar-week
-          - type: entities
-            title: Generator preferences
-            entities:
-              - entity: input_text.kitchen_use_up_ingredients
-                name: Pantry/fridge ingredients to use up
-              - entity: input_text.kitchen_seasonal_ingredients
-                name: Seasonal ingredients
-              - entity: input_boolean.kitchen_use_woolworths_specials
-                name: Favour ingredients on special
-          - type: button
-            name: Generate balanced 4-meal plan
-            icon: mdi:dice-multiple
-            show_state: false
-            tap_action:
-              action: call-service
-              service: script.kitchen_generate_four_meals_from_mealie
           - type: conditional
             conditions:
-              - entity: sensor.kitchen_next_week_selection_due
+              - entity: input_boolean.kitchen_meal_plan_setup_complete
+                state: "off"
+            card:
+              type: vertical-stack
+              cards:
+                - type: markdown
+                  content: |
+                    ## Set up this week's plan
+
+                    Choose how many meals to plan and how many must be categorized
+                    **Quick and Easy**, then press **Accept**.
+                - type: entities
+                  title: Generator preferences
+                  show_header_toggle: false
+                  entities:
+                    - entity: input_number.kitchen_meals_this_week
+                      name: Number of meals
+                    - entity: input_number.kitchen_quick_and_easy_meals_this_week
+                      name: Minimum Quick and Easy meals
+                    - entity: input_text.kitchen_use_up_ingredients
+                      name: Ingredients to use up
+                    - entity: input_text.kitchen_seasonal_ingredients
+                      name: Seasonal ingredients
+                    - entity: input_boolean.kitchen_use_woolworths_specials
+                      name: Favour ingredients on special
+                - type: markdown
+                  content: |
+                    {% set meals = states('input_number.kitchen_meals_this_week') | int(4) %}
+                    {% set easy = states('input_number.kitchen_quick_and_easy_meals_this_week') | int(2) %}
+                    {% if easy > meals %}
+                    ⚠️ Quick and Easy meals cannot exceed the total meal count.
+                    {% else %}
+                    Ready for **{{ meals }} meals**, including at least **{{ easy }} Quick and Easy**.
+                    {% endif %}
+                - type: button
+                  name: Accept
+                  icon: mdi:check
+                  tap_action:
+                    action: call-service
+                    service: script.kitchen_accept_meal_plan_settings
+          - type: conditional
+            conditions:
+              - entity: input_boolean.kitchen_meal_plan_setup_complete
                 state: "on"
             card:
               type: vertical-stack
               cards:
                 - type: markdown
                   content: |
-                    ## Select your meals for next week
+                    ## Meal selection
 
-                    Choose or edit the four meals, lock them in, and the grocery list will be generated automatically.
-                - type: button
-                  name: Start meal selection
-                  icon: mdi:calendar-edit
-                  tap_action:
-                    action: call-service
-                    service: script.kitchen_start_next_week_selection
-          - type: conditional
-            conditions:
-              - entity: input_boolean.kitchen_next_week_selection_active
-                state: "off"
-            card:
-              type: grid
-              columns: 2
-              square: false
-              cards:
-                - type: button
-                  entity: input_text.kitchen_meal_1
-                  name: Meal 1
-                  show_state: true
-                  tap_action:
-                    action: none
-                - type: button
-                  entity: input_text.kitchen_meal_2
-                  name: Meal 2
-                  show_state: true
-                  tap_action:
-                    action: none
-                - type: button
-                  entity: input_text.kitchen_meal_3
-                  name: Meal 3
-                  show_state: true
-                  tap_action:
-                    action: none
-                - type: button
-                  entity: input_text.kitchen_meal_4
-                  name: Meal 4
-                  show_state: true
-                  tap_action:
-                    action: none
-          - type: conditional
-            conditions:
-              - entity: input_boolean.kitchen_next_week_selection_active
-                state: "on"
-            card:
-              type: vertical-stack
-              cards:
+                    **{{ states('input_number.kitchen_meals_this_week') | int(4) }} meals** · minimum
+                    **{{ states('input_number.kitchen_quick_and_easy_meals_this_week') | int(2) }} Quick and Easy**.
+                    Lock any meal you want to keep, then press **Randomize** to
+                    regenerate only the unlocked slots.
+                - type: grid
+                  columns: 2
+                  square: false
+                  cards:
+                    - type: custom:kitchen-meal-action-card
+                      name: Randomize unlocked meals
+                      icon: mdi:dice-multiple
+                      busy_name: Randomizing meals…
+                      entity: script.kitchen_generate_four_meals_from_mealie
+                    - type: button
+                      name: Reset
+                      icon: mdi:restart
+                      tap_action:
+                        action: call-service
+                        service: script.kitchen_reset_meal_plan
                 - type: markdown
-                  content: "## Select and lock next week's meals"
-                - type: entities
-                  entities:
-                    - entity: input_text.kitchen_meal_1
-                      name: Meal 1 recipe
-                    - entity: input_boolean.kitchen_meal_lock_1
-                      name: Lock meal 1
-                    - entity: input_text.kitchen_meal_2
-                      name: Meal 2 recipe
-                    - entity: input_boolean.kitchen_meal_lock_2
-                      name: Lock meal 2
-                    - entity: input_text.kitchen_meal_3
-                      name: Meal 3 recipe
-                    - entity: input_boolean.kitchen_meal_lock_3
-                      name: Lock meal 3
-                    - entity: input_text.kitchen_meal_4
-                      name: Meal 4 recipe
-                    - entity: input_boolean.kitchen_meal_lock_4
-                      name: Lock meal 4
+                  title: Generator status
+                  content: |
+                    {% set result = states('input_text.kitchen_meal_generator_status') %}
+                    {% if result.startswith('PASS') %}
+                    ✅ {{ result }}
+                    {% elif result.startswith('FAIL') %}
+                    ❌ {{ result }}
+                    {% elif result.startswith('Running') %}
+                    ⏳ {{ result }}
+                    {% else %}
+                    {{ result }}
+                    {% endif %}
+
+                    {% set diagnostics = state_attr('sensor.kitchen_meal_plan_generator', 'diagnostics') | default({}, true) %}
+                    {% if diagnostics %}
+                    {{ diagnostics.eligible_recipes | default('--') }} eligible ·
+                    {{ diagnostics.quick_and_easy_recipes | default('--') }} Quick and Easy ·
+                    {{ diagnostics.locked_meals | default(0) }} locked preserved ·
+                    {{ diagnostics.avoided_previous | default(0) }} previous meals rotated out ·
+                    {{ diagnostics.excluded_complex | default(0) }} complex excluded ·
+                    {{ diagnostics.excluded_recent | default(0) }} recent excluded
+                    {% endif %}
+                - type: custom:kitchen-meal-picker-card
+                  slot: 1
+                  config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+                - type: conditional
+                  conditions:
+                    - entity: input_number.kitchen_meals_this_week
+                      condition: numeric_state
+                      above: 1
+                  card:
+                    type: custom:kitchen-meal-picker-card
+                    slot: 2
+                    config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+                - type: conditional
+                  conditions:
+                    - entity: input_number.kitchen_meals_this_week
+                      condition: numeric_state
+                      above: 2
+                  card:
+                    type: custom:kitchen-meal-picker-card
+                    slot: 3
+                    config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+                - type: conditional
+                  conditions:
+                    - entity: input_number.kitchen_meals_this_week
+                      condition: numeric_state
+                      above: 3
+                  card:
+                    type: custom:kitchen-meal-picker-card
+                    slot: 4
+                    config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
                 - type: conditional
                   conditions:
                     - entity: input_number.kitchen_meals_this_week
                       condition: numeric_state
                       above: 4
                   card:
-                    type: entities
-                    title: Additional recipe 5
-                    entities:
-                      - entity: input_text.kitchen_meal_5
-                        name: Meal 5 recipe
-                      - entity: input_boolean.kitchen_meal_lock_5
-                        name: Lock meal 5
+                    type: custom:kitchen-meal-picker-card
+                    slot: 5
+                    config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
                 - type: conditional
                   conditions:
                     - entity: input_number.kitchen_meals_this_week
                       condition: numeric_state
                       above: 5
                   card:
-                    type: entities
-                    title: Additional recipe 6
-                    entities:
-                      - entity: input_text.kitchen_meal_6
-                        name: Meal 6 recipe
-                      - entity: input_boolean.kitchen_meal_lock_6
-                        name: Lock meal 6
+                    type: custom:kitchen-meal-picker-card
+                    slot: 6
+                    config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
                 - type: conditional
                   conditions:
                     - entity: input_number.kitchen_meals_this_week
                       condition: numeric_state
                       above: 6
                   card:
-                    type: entities
-                    title: Additional recipe 7
-                    entities:
-                      - entity: input_text.kitchen_meal_7
-                        name: Meal 7 recipe
-                      - entity: input_boolean.kitchen_meal_lock_7
-                        name: Lock meal 7
-                - type: conditional
-                  conditions:
-                    - entity: input_number.kitchen_meals_this_week
-                      condition: numeric_state
-                      below: 7
-                  card:
-                    type: button
-                    name: Add another recipe
-                    icon: mdi:plus-circle
-                    tap_action:
-                      action: call-service
-                      service: script.kitchen_add_selection_recipe
-                - type: button
-                  name: Done — lock meals and create grocery list
-                  icon: mdi:check-all
-                  tap_action:
-                    action: call-service
-                    service: script.kitchen_finish_next_week_selection
+                    type: custom:kitchen-meal-picker-card
+                    slot: 7
+                    config_entry_id: 01M3JW7B0TPXD7C9CWMBARJ8KX
+                - type: custom:kitchen-meal-action-card
+                  name: Lock all and create grocery list
+                  icon: mdi:cart-check
+                  busy_name: Creating grocery list…
+                  entity: script.kitchen_finish_next_week_selection
       - type: grid
         cards:
           - type: conditional
@@ -179,7 +185,8 @@ views:
                     **Time:** {{ state_attr('sensor.kitchen_recipe_display', 'total_time') | default('--') }}
 
                     ## Ingredients
-                    {{ state_attr('sensor.kitchen_recipe_display', 'ingredients') | default([]) | join('\n') }}
+                    {% set ingredients = state_attr('sensor.kitchen_recipe_display', 'ingredients') | default('', true) %}
+                    {{ ingredients | replace('\n', '  \n') if ingredients is string else ingredients | join('  \n') }}
 
                     ## Current step
                     {{ state_attr('sensor.kitchen_recipe_display', 'instruction') | default('Open the recipe display for cooking steps.') }}
@@ -205,12 +212,22 @@ views:
             card:
               type: markdown
               content: |
-                Tap a meal card to open its recipe. A check mark means it has been cooked.
+                Use **Open** on a saved Mealie meal to view its recipe. Custom meals do not have recipe details.
           - type: heading
             heading: Shopping lists
             icon: mdi:cart
+          - type: markdown
+            content: >-
+              **Last grocery-list result:**
+              {{ states('input_text.kitchen_shopping_list') | default('Not generated yet', true) }}
+          - type: custom:kitchen-meal-action-card
+            name: Clear grocery list
+            icon: mdi:delete-sweep
+            busy_name: Clearing grocery list…
+            entity: script.kitchen_clear_shopping_list
+            confirmation: Clear every item from the Mealie grocery list?
           - type: todo-list
-            entity: todo.mealie_shopping_list
+            entity: todo.mealie_woolies
             title: Meal groceries
           - type: todo-list
             entity: todo.kitchen_household_list

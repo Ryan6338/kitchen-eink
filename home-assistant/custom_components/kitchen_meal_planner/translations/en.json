@@ -1,0 +1,36 @@
+{
+  "services": {
+    "load_catalog": {
+      "name": "Load recipe catalog",
+      "description": "Load compact Mealie recipe names for the searchable dashboard picker."
+    },
+    "set_meal": {
+      "name": "Set meal slot",
+      "description": "Set a slot from a Mealie recipe name or store arbitrary text as a custom meal."
+    },
+    "populate_shopping_list": {
+      "name": "Populate shopping list",
+      "description": "Add the current plan's ingredients to Mealie with one final refresh."
+    },
+    "clear_shopping_list": {
+      "name": "Clear shopping list",
+      "description": "Remove every item from the selected Mealie shopping list and refresh it once."
+    },
+    "generate_plan": {
+      "name": "Generate balanced meal plan",
+      "description": "Generate a constrained and weighted meal plan while preserving locked slots."
+    },
+    "generate_future_plan": {
+      "name": "Generate future meal plans",
+      "description": "Generate multiple unique weekly plans with the same constraints."
+    },
+    "replace_meal": {
+      "name": "Replace one meal",
+      "description": "Replace one meal while preserving the plan constraints."
+    },
+    "sync_plan": {
+      "name": "Synchronize meal plan",
+      "description": "Rebuild the Python plan sensor from the meal and day helpers."
+    }
+  }
+}

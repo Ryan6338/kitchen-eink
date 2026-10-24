@@ -1,0 +1,9 @@
+{
+  "domain": "kitchen_meal_planner",
+  "name": "Kitchen Meal Planner",
+  "codeowners": [],
+  "dependencies": ["frontend", "http", "mealie"],
+  "documentation": "https://github.com/Ryan6338/kitchen-eink",
+  "iot_class": "local_polling",
+  "version": "0.3.5"
+}

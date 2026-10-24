@@ -1,0 +1,161 @@
+load_catalog:
+  name: Load recipe catalog
+  description: Load compact Mealie recipe names for the searchable dashboard picker.
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: mealie
+
+set_meal:
+  name: Set meal slot
+  description: Set a slot from a Mealie recipe name or store arbitrary text as a custom meal.
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: mealie
+    slot:
+      required: true
+      selector:
+        number:
+          min: 1
+          max: 7
+          mode: box
+    value:
+      required: true
+      selector:
+        text:
+    lock:
+      default: false
+      selector:
+        boolean:
+
+populate_shopping_list:
+  name: Populate shopping list
+  description: Add the current plan's ingredients to Mealie with one final refresh.
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: mealie
+    shopping_list_entity:
+      required: true
+      selector:
+        entity:
+          integration: mealie
+          domain: todo
+
+clear_shopping_list:
+  name: Clear shopping list
+  description: Remove every item from the selected Mealie shopping list and refresh it once.
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: mealie
+    shopping_list_entity:
+      required: true
+      selector:
+        entity:
+          integration: mealie
+          domain: todo
+
+generate_plan:
+  name: Generate balanced meal plan
+  description: Generate a constrained and weighted meal plan while preserving locked slots.
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: mealie
+    meal_count:
+      default: 4
+      selector:
+        number:
+          min: 1
+          max: 7
+          mode: box
+    minimum_quick_and_easy:
+      default: 2
+      selector:
+        number:
+          min: 0
+          max: 7
+          mode: box
+    dry_run:
+      default: false
+      selector:
+        boolean:
+
+generate_future_plan:
+  name: Generate future meal plans
+  description: Generate multiple unique weekly plans with the same constraints.
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: mealie
+    weeks:
+      default: 4
+      selector:
+        number:
+          min: 1
+          max: 8
+          mode: box
+    meal_count:
+      default: 4
+      selector:
+        number:
+          min: 1
+          max: 7
+          mode: box
+    minimum_quick_and_easy:
+      default: 2
+      selector:
+        number:
+          min: 0
+          max: 7
+          mode: box
+    dry_run:
+      default: false
+      selector:
+        boolean:
+
+replace_meal:
+  name: Replace one meal
+  description: Replace one meal while preserving the plan constraints.
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: mealie
+    slot:
+      required: true
+      selector:
+        number:
+          min: 1
+          max: 7
+          mode: box
+    minimum_quick_and_easy:
+      default: 2
+      selector:
+        number:
+          min: 0
+          max: 7
+          mode: box
+    dry_run:
+      default: false
+      selector:
+        boolean:
+
+sync_plan:
+  name: Synchronize meal plan
+  description: Rebuild the Python plan sensor from the meal and day helpers.
